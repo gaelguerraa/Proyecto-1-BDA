@@ -1,0 +1,60 @@
+MODELO RELACIONAL - PROYECTO 1
+
+Usuarios (
+  idPersona : INT auto_incremento requerido, 
+  email : VARCHAR(60) requerido,
+  nombre : VARCHAR(20) requerido,
+  contraseña_hash : VARCHAR(30) requerido,
+  apellidoPaterno : VARCHAR(20) requerido,
+  apellidoMaterno : VARCHAR(20) requerido,
+  fechaNacimiento : DATE requerido,
+  saldo : DECIMAL requerido default 0,
+  edad : INT requerido
+  idDireccion : INT,
+)
+-se creará una función que incremente la edad cada año
+-idDireccion llave foranea que pertenece a DireccionesUsuarios(idDireccion)
+
+DireccionesUsuarios(
+  idDireccion : INT auto_incremento requerido,
+  calle : VARCHAR(30) requerido,
+  numeroCasa : VARCHAR(10) requerido,
+  colonia : VARCHAR(30) requerido,
+)
+
+Boletos (
+  idBoleto : INT auto_incremento requerido,
+  numeroSerie : VARCHAR(8) requerido,
+  fila : VARCHAR(8) requerido,
+  asiento : VARCHAR(8) requerido,
+  precioOriginal : DECIMAL requerido,
+  numeroInterno : VARCHAR(10) requerido,
+  idEvento : INT,
+  idUsuario: INT
+)
+- idEvento llave foranea que pertenece a Eventos(idEvento)
+- idUsuario llave foranea que pertenece a Usuarios(idUsuario)
+
+
+Eventos (
+  idEvento : INT auto_incremento requerido, 
+  nombre : VARCHAR(50) requerido, 
+  fecha : DATE requerido, 
+  recinto : VARCHAR(40) requerido, 
+  ciudad : VARCHAR(30) requerido, 
+  estado : VARCHAR(30) requerido, 
+  descripcion :  VARCHAR(100)
+)
+
+Transacciones (
+  idTransaccion : INT auto_incremento requerido, 
+  fechaHora : DATE requerido,
+  monto : DECIMAL requerido,
+  tipo : VARCHAR(Compra, Reventa) requerido,
+  idBoleto : INT,
+  idComprador : INT,
+  idVendedor : INT
+)
+- idBoleto llave foranea que pertenece a Boletos(idBoleto)
+- idComprador llave foranea que pertenece a Usuarios(idUsuario)
+- idVendedor llave foranea que pertenece a Usuarios(idUsuario)
