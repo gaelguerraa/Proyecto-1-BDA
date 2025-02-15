@@ -29,6 +29,7 @@ Boletos (
   asiento : VARCHAR(8) requerido,
   precioOriginal : DECIMAL requerido,
   numeroInterno : VARCHAR(10) requerido,
+  estado : VARCHAR(Disponible, Apartado, Vendido), requerido,
   idEvento : INT,
   idUsuario: INT
 )
@@ -51,6 +52,7 @@ Transacciones (
   fechaHora : DATE requerido,
   monto : DECIMAL requerido,
   tipo : VARCHAR(Compra, Reventa) requerido,
+  estado : VARCHAR(Completada, Cancelada) requerido,
   idBoleto : INT,
   idComprador : INT,
   idVendedor : INT
