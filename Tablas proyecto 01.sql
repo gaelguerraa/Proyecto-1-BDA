@@ -1,6 +1,13 @@
 CREATE DATABASE bdBoletos;
 USE bdBoletos;
 
+CREATE TABLE DireccionesUsuarios (
+    idDireccion INT AUTO_INCREMENT PRIMARY KEY,
+    calle VARCHAR(30) NOT NULL,
+    ciudad VARCHAR(30) NOT NULL,
+    estado VARCHAR(30) NOT NULL
+);
+
 CREATE TABLE Usuarios (
     idUsuario INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -10,16 +17,9 @@ CREATE TABLE Usuarios (
     apellidoMaterno VARCHAR(20) NOT NULL,
     fechaNacimiento DATE NOT NULL,
     saldo DECIMAL(10,2) NOT NULL DEFAULT 0,
-    edad INT NOT NULL
+    edad INT NOT NULL,
     idDireccion INT NOT NULL,
-    FOREIGN KEY (idDireccion) REFERENCES DireccionesUsuarios(idDireccion) ON DELETE CASCADE,
-);
-
-CREATE TABLE DireccionesUsuarios (
-    idDireccion INT AUTO_INCREMENT PRIMARY KEY
-    calle VARCHAR(30) NOT NULL,
-    ciudad VARCHAR(30) NOT NULL,
-    estado VARCHAR(30) NOT NULL,
+    FOREIGN KEY (idDireccion) REFERENCES DireccionesUsuarios(idDireccion) ON DELETE CASCADE
 );
 
 CREATE TABLE Eventos (
@@ -39,32 +39,35 @@ CREATE TABLE Boletos (
     asiento VARCHAR(10) NOT NULL,
     precioOriginal DECIMAL(10,2) NOT NULL,
     numeroInterno VARCHAR(20) NOT NULL,
-    estado VARCHAR("Disponible", "Apartado", "Vendido") NOT NULL,
+    estado VARCHAR(20) NOT NULL,
     idEvento INT NOT NULL,
-    idPersona INT NOT NULL,
+    idUsuario INT NOT NULL,
     FOREIGN KEY (idEvento) REFERENCES Eventos(idEvento) ON DELETE CASCADE,
-    FOREIGN KEY (idPersona) REFERENCES Personas(idPersona) ON DELETE CASCADE
+    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario) ON DELETE CASCADE,
+    CONSTRAINT revisar_estadoBoleto CHECK (estado IN ('Disponible', 'Apartado', 'Vendido'))
 );
 
 CREATE TABLE Transacciones (
     idTransaccion INT AUTO_INCREMENT PRIMARY KEY,
     fechaHora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     monto DECIMAL(10,2) NOT NULL,
-    tipo VARCHAR("Compra", "Reventa") NOT NULL,
-    estado VARCHAR("Completada", "Cancelada") NOT NULL,
+    tipo VARCHAR(15) NOT NULL,
+    estado VARCHAR(20) NOT NULL,
     idBoleto INT NOT NULL,
     idComprador INT NOT NULL,
     idVendedor INT NOT NULL,
     FOREIGN KEY (idBoleto) REFERENCES Boletos(idBoleto) ON DELETE CASCADE,
-    FOREIGN KEY (idComprador) REFERENCES Personas(idPersona) ON DELETE CASCADE,
-    FOREIGN KEY (idVendedor) REFERENCES Personas(idPersona) ON DELETE CASCADE
+    FOREIGN KEY (idComprador) REFERENCES Usuarios(idUsuario) ON DELETE CASCADE,
+    FOREIGN KEY (idVendedor) REFERENCES Usuarios(idUsuario) ON DELETE CASCADE,
+    CONSTRAINT chk_tipo CHECK (tipo IN ('Compra', 'Reventa')),
+    CONSTRAINT revisar_estadoTransaccion CHECK (estado IN ('Completada', 'Cancelada', 'Procesando'))
 );
 
 -- FUNCIÓN PARA ACTUALIZAR EDADES CADA AÑO
 DELIMITER //
 CREATE PROCEDURE ActualizarEdades()
 BEGIN
-    UPDATE Personas 
+    UPDATE Usuarios 
     SET edad = TIMESTAMPDIFF(YEAR, fechaNacimiento, CURDATE());
 END //
 DELIMITER ;
