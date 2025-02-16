@@ -1,27 +1,34 @@
-CREATE DATABASE PROYECTO01BDA;
-USE PROYECTO01BDA;
+CREATE DATABASE bdBoletos;
+USE bdBoletos;
 
-CREATE TABLE Personas (
-    idPersona INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Usuarios (
+    idUsuario INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     nombre VARCHAR(20) NOT NULL,
+    contraseña_hash VARCHAR(30) NOT NULL,
     apellidoPaterno VARCHAR(20) NOT NULL,
     apellidoMaterno VARCHAR(20) NOT NULL,
     fechaNacimiento DATE NOT NULL,
-    calle VARCHAR(20) NOT NULL,
-    numeroCasa VARCHAR(10) NOT NULL,
-    colonia VARCHAR(20) NOT NULL,
     saldo DECIMAL(10,2) NOT NULL DEFAULT 0,
     edad INT NOT NULL
+    idDireccion INT NOT NULL,
+    FOREIGN KEY (idDireccion) REFERENCES DireccionesUsuarios(idDireccion) ON DELETE CASCADE,
+);
+
+CREATE TABLE DireccionesUsuarios (
+    idDireccion INT AUTO_INCREMENT PRIMARY KEY
+    calle VARCHAR(30) NOT NULL,
+    ciudad VARCHAR(30) NOT NULL,
+    estado VARCHAR(30) NOT NULL,
 );
 
 CREATE TABLE Eventos (
     idEvento INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(30) NOT NULL,
     fecha DATETIME NOT NULL,
-    recinto VARCHAR(20) NOT NULL,
-    ciudad VARCHAR(20) NOT NULL,
-    estado VARCHAR(20) NOT NULL,
+    recinto VARCHAR(30) NOT NULL,
+    ciudad VARCHAR(30) NOT NULL,
+    estado VARCHAR(30) NOT NULL,
     descripcion VARCHAR(100) NOT NULL
 );
 
@@ -32,6 +39,7 @@ CREATE TABLE Boletos (
     asiento VARCHAR(10) NOT NULL,
     precioOriginal DECIMAL(10,2) NOT NULL,
     numeroInterno VARCHAR(20) NOT NULL,
+    estado VARCHAR("Disponible", "Apartado", "Vendido") NOT NULL,
     idEvento INT NOT NULL,
     idPersona INT NOT NULL,
     FOREIGN KEY (idEvento) REFERENCES Eventos(idEvento) ON DELETE CASCADE,
@@ -41,8 +49,9 @@ CREATE TABLE Boletos (
 CREATE TABLE Transacciones (
     idTransaccion INT AUTO_INCREMENT PRIMARY KEY,
     fechaHora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    precioVenta DECIMAL(10,2) NOT NULL,
-    tipo VARCHAR(50) NOT NULL, -- Puede ser "compra", "reventa", etc.
+    monto DECIMAL(10,2) NOT NULL,
+    tipo VARCHAR("Compra", "Reventa") NOT NULL,
+    estado VARCHAR("Completada", "Cancelada") NOT NULL,
     idBoleto INT NOT NULL,
     idComprador INT NOT NULL,
     idVendedor INT NOT NULL,
