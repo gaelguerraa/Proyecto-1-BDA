@@ -1,7 +1,7 @@
 MODELO RELACIONAL - PROYECTO 1
 
 Usuarios (
-  idPersona : INT auto_incremento requerido, 
+  idUsuario : INT auto_incremento requerido, 
   email : VARCHAR(60) requerido,
   nombre : VARCHAR(20) requerido,
   contraseña_hash : VARCHAR(30) requerido,
@@ -18,8 +18,8 @@ Usuarios (
 DireccionesUsuarios(
   idDireccion : INT auto_incremento requerido,
   calle : VARCHAR(30) requerido,
-  numeroCasa : VARCHAR(10) requerido,
-  colonia : VARCHAR(30) requerido,
+  ciudad : VARCHAR(30) requerido,
+  estado : VARCHAR(30) requerido,
 )
 
 Boletos (
