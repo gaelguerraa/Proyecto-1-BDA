@@ -17,7 +17,6 @@ CREATE TABLE Usuarios (
     apellidoMaterno VARCHAR(20) NOT NULL,
     fechaNacimiento DATE NOT NULL,
     saldo DECIMAL(10,2) NOT NULL DEFAULT 0,
-    edad INT NOT NULL,
     idDireccion INT NOT NULL,
     FOREIGN KEY (idDireccion) REFERENCES DireccionesUsuarios(idDireccion) ON DELETE CASCADE
 );
@@ -76,3 +75,13 @@ DELIMITER ;
 CREATE EVENT IF NOT EXISTS EventoActualizarEdades
 ON SCHEDULE EVERY 1 YEAR STARTS TIMESTAMP(CURDATE(), '00:00:00')
 DO CALL ActualizarEdades();
+
+-- FUNCION PARA CALCULAR EDAD A PARTIR DE FECHA DE NACIMIENTO
+CREATE FUNCTION CalcularEdad(@fecha_nacimiento DATE)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @edad INT
+    SET @edad = DATEDIFF(YEAR, @fechanacimiento, GETDATE())
+    RETURN @edad
+END;
