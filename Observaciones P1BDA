@@ -1,0 +1,19 @@
+“Cada boleto tiene un número de serie único generado por el sistema cada vez que cambia de dueño (conformado por 8 caracteres, números y letras)”
+-Se debe realizar un trigger que cambie el número de serie y le ponga valores al azar cuando el dueño del boleto cambie(idUsuario)
+
+“Cada boleto tiene un número de serie único generado por el sistema cada vez que cambia de dueño (conformado por 8 caracteres, números y letras), fila, asiento, así como un número 
+interno de control que no se le muestra a ningún usuario, el cuál representa el identificador del asiento del recinto y el precio original del boleto.”  
+-Podría usarse una vista para ocultar el número interno.
+
+“Compra de boletos: Un usuario podrá comprar un boleto que está en reventa por otro usuario en la plataforma. El monto de la transacción será debitado de la cuenta del comprador y 
+acreditado a la cuenta del vendedor, menos una comisión de servicio (3%). Si el usuario no tiene saldo suficiente en su cuenta, el sistema “apartará” los boletos durante 10 minutos, 
+si el usuario no deposita el dinero a su cuenta, los boletos se liberarán nuevamente para la venta.“
+-Se requiere un Storage Procedure con una transacción que primero verifique si el boleto esta disponible, luego obtenemos el saldo del usuario comprador, calculamos la comisión 
+multiplicando el precio del boleto por 0.03, luego le descontamos el saldo al comprador y se lo depositamos al vendedor menos la comisión, y por último registramos la transacción. 
+Si algún paso de los mencionados anteriormente falla entonces se realiza lo siguiente; actualizamos el estado del boleto a “Apartado” y registramos la transacción.
+-Creamos otro Stored Procedure para que en caso de que pasen los 10 minutos se actualice el estado del boleto de “Apartado” a “Disponible” y por último cambiamos el estado de la 
+transacción de “Apartado” a “Cancelado,”
+
+“Reventa de boletos: Un usuario podrá poner a la venta boletos que haya adquirido previamente, eligiendo el precio de reventa (el cuál no puede ser mayor al 3% más el precio original 
+del boleto) y la fecha límite para la venta. Una vez vendido, los boletos se removerán del perfil del dueño original, y pasarán al comprador. Es necesario aclarar que el usuario podría 
+vender solo una fracción de los boletos que tiene por evento, es decir, si tiene 4 boletos para un concierto, puede vender solo 2 y seleccionar cuáles asientos desea vender.” 
