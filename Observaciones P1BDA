@@ -17,3 +17,10 @@ transacción de “Apartado” a “Cancelado,”
 “Reventa de boletos: Un usuario podrá poner a la venta boletos que haya adquirido previamente, eligiendo el precio de reventa (el cuál no puede ser mayor al 3% más el precio original 
 del boleto) y la fecha límite para la venta. Una vez vendido, los boletos se removerán del perfil del dueño original, y pasarán al comprador. Es necesario aclarar que el usuario podría 
 vender solo una fracción de los boletos que tiene por evento, es decir, si tiene 4 boletos para un concierto, puede vender solo 2 y seleccionar cuáles asientos desea vender.” 
+- Se creará un Storage Procedure con una transacción para que el usuario ponga a la venta el boleto procedente de una reventa, se sabrá si la venta del boleto será reventa ya que 
+si el idBoleto está asociado con una transacción, luego se declarara el el precio límite del boleto que se sabrá haciendo la operación precioOriginal*1.03, contaremos todos los 
+boletos que posea el vendedor y lo dividiremos por 2 y si el número de boletos en venta es superior a ese resultado no se podrá poner en venta el boleto y finalmente se preguntará 
+la fecha límite. Si alguna condición no se cumple entonces se cancelará la transacción de poner el estado del boleto de “Vendido” a “Disponible”, si pasando la fecha limite ningun 
+usuario compra el boleto el boleto cambiará de “Disponible” a “Vendido” y no sera apto para comprar. 
+-Si se realiza exitosamente la transacción previa se utilizara de nuevo la transacción del procedimiento para la compra de boletos con el cambio de que en el registro de transacción 
+que se haga en tipo quedará “Reventa” 
