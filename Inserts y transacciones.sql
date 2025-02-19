@@ -66,6 +66,7 @@ SELECT * FROM Boletos;
 
 
 -- TRANSACCION PARA AÑADIR SALDO
+-- FUNCIONA BIEN
 DELIMITER $$
 CREATE PROCEDURE AÑADIR_SALDO (_IDUSUARIO INT, _SALDO DECIMAL(10,2))
 
@@ -84,16 +85,19 @@ DELIMITER ;
 
  
 
+
 DELIMITER $$
 
 -- TRANSACCION PARA COMPRAR BOLETOS
-
+-- NO SE DONDE VERGA ESTA EL ERROR, PUEDE QUE TODO ESTE MAL
 CREATE PROCEDURE COMPRAR_BOLETO(_NOMBRE VARCHAR(30), _FECHA DATETIME, _IDCOMPRADOR INT)
+
 BEGIN
 
 START TRANSACTION;
 
-
+#BUSCA UN BOLETO DE UN EVENTO ESPECIFICO EN BASE A LA FECHA Y EL NOMBRE DEL EVENTO DE LOS PARAMETROS Y 
+#SI EXISTE CONVIERTE SUS ATRIBUTOS A VARIABLES LOCALES
 SELECT  BO.precioOriginal, 
 		BO.idUsuario, 
         BO.estado, 
@@ -109,40 +113,50 @@ SELECT  BO.precioOriginal,
     FROM Boletos BO
     INNER JOIN EVENTOS EV ON BO.IDEVENTO=EV.IDEVENTO
 	WHERE bo.estado = "Disponible" and  
-    ev.nombre = "_nombre" and 
-    EV.FECHA = "FECHA";
+    ev.nombre = _nombre and 
+    EV.FECHA = FECHA
+    LIMIT 1;
     
+ #SI EL ESTADO DEL BOLETO NO ES DISPONIBLE O NO EXISTE EL ID DEL BOLETO SE VA ALV    
 if @estadoActual != "Disponible" or @idboleto is null then 
    ROLLBACK;
     END IF;
-
+    
+#DESIGNAMOS LA COMISION 
 SET @comision = @precio * 0.03;
-	
+
+#SELECCIONAMOS EL SALDO DEL COMPRADOR Y LO ALMACENAMOS EN UNA VARIABLE LOCAL	
 SELECT us.saldo 
 into @saldo from usuarios us
 where us.idusuario = _idComprador;
 
-IF @saldo < (@precio + @comision) then
+# SI EL SALDO ES MENOR AL PRECIO DEL BOLETO PONEMOS EL BOLETO COMO APARTADO
+IF @saldo < @precio then
 	update boletos 
     set estado = "Apartado" where idboleto = @idboleto;
+    #GUARDAMOS LA TRANSACCION
     insert into transacciones (fechahora, monto, tipo, estado, idBoleto, idComprador, idVendedor )
     values (now(), @precio, "Compra", "Procesando", @idBoleto, _idComprador, @idVendedor);
     
     commit;
 end if;
 
+#LE QUITAMOS EL DINERO DEL BOLETO AL COMPRADOR
 UPDATE USUARIOS
-SET SALDO = SALDO - (@precio - @comision)
+SET SALDO = SALDO - @precio
 WHERE IDUSUARIO = _IDCOMPRADOR; 
 
+#LE DEPOSITAMOS EL DINERO MENOS LA COMISION AL VENDEDOR
 UPDATE USUARIOS
 SET SALDO = SALDO + (@precio - @comision)
 WHERE IDUSUARIO = _IDVENDEDOR;
 
+#ACTUALIZAMOS EL ESTADO DEL BOLETO A VENDIDO Y POR ENDE NO DISPONIBLE PARA COMPRAR
 UPDATE Boletos 
 SET estado = "Vendido", idUsuario = _idComprador
    WHERE idBoleto = @idBoleto;
 
+#GUARDAMOS LA TRANSACCION
 INSERT INTO Transacciones (monto, tipo, estado, idBoleto, idComprador, idVendedor)
 VALUES (@precio, 'Reventa', 'Completada', @idBoleto, _idComprador, _idVendedor);
 
