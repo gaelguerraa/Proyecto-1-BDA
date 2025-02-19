@@ -40,7 +40,7 @@ CREATE TABLE Boletos (
     numeroInterno VARCHAR(20) NOT NULL,
     estado VARCHAR(20) NOT NULL,
     idEvento INT NOT NULL,
-    idUsuario INT NOT NULL,
+    idUsuario INT,
     FOREIGN KEY (idEvento) REFERENCES Eventos(idEvento) ON DELETE CASCADE,
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario) ON DELETE CASCADE,
     CONSTRAINT revisar_estadoBoleto CHECK (estado IN ('Disponible', 'Apartado', 'Vendido'))
@@ -54,7 +54,7 @@ CREATE TABLE Transacciones (
     estado VARCHAR(20) NOT NULL,
     idBoleto INT NOT NULL,
     idComprador INT NOT NULL,
-    idVendedor INT NOT NULL,
+    idVendedor INT,
     FOREIGN KEY (idBoleto) REFERENCES Boletos(idBoleto) ON DELETE CASCADE,
     FOREIGN KEY (idComprador) REFERENCES Usuarios(idUsuario) ON DELETE CASCADE,
     FOREIGN KEY (idVendedor) REFERENCES Usuarios(idUsuario) ON DELETE CASCADE,
