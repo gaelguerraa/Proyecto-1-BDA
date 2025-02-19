@@ -88,84 +88,79 @@ DELIMITER ;
 
 DELIMITER $$
 
--- TRANSACCION PARA COMPRAR BOLETOS
--- NO SE DONDE VERGA ESTA EL ERROR, PUEDE QUE TODO ESTE MAL
-CREATE PROCEDURE COMPRAR_BOLETO(_NOMBRE VARCHAR(30), _FECHA DATETIME, _IDCOMPRADOR INT)
+CREATE PROCEDURE comprar_boleto_sistema(nombreEvento VARCHAR(30), fechaEvento DATETIME, idUsuario INT)
 
 BEGIN
 
+DECLARE saldoUsuario DECIMAL(10, 2);
+DECLARE idBoleto INT;
+DECLARE precio DECIMAL(10, 2);
+DECLARE estadoActual VARCHAR(30);
+
+SELECT saldo INTO saldoUsuario
+FROM Usuarios
+WHERE idUsuario=idUsuario;
+
+
 START TRANSACTION;
 
-#BUSCA UN BOLETO DE UN EVENTO ESPECIFICO EN BASE A LA FECHA Y EL NOMBRE DEL EVENTO DE LOS PARAMETROS Y 
-#SI EXISTE CONVIERTE SUS ATRIBUTOS A VARIABLES LOCALES
-SELECT  BO.precioOriginal, 
-		BO.idUsuario, 
-        BO.estado, 
-        EV.nombre , 
-        EV.fecha,  
-        BO.idBoleto
-    INTO @precio, 
-		 @idVendedor, 
-         @estadoActual,
-         @nombreEvento, 
-         @fechaEvento, 
-         @idBoleto
-    FROM Boletos BO
-    INNER JOIN EVENTOS EV ON BO.IDEVENTO=EV.IDEVENTO
-	WHERE bo.estado = "Disponible" and  
-    ev.nombre = _nombre and 
-    EV.FECHA = FECHA
-    LIMIT 1;
-    
- #SI EL ESTADO DEL BOLETO NO ES DISPONIBLE O NO EXISTE EL ID DEL BOLETO SE VA ALV    
-if @estadoActual != "Disponible" or @idboleto is null then 
-   ROLLBACK;
+SELECT	
+		B.idBoleto,
+		B.precioOriginal,
+        B.estado
+        INTO
+        idBoleto,
+        precio,
+        estadoActual
+        FROM Boletos B
+        INNER JOIN EVENTOS E
+        ON B.IDEVENTO=E.IDEVENTO
+        WHERE 
+        B.estado = "Disponible" AND
+        E.nombre = nombreEvento
+        AND E.fecha = fechaEvento
+        LIMIT 1;
+        
+    -- Verificar si el boleto está disponible
+    IF estadoActual != "Disponible" THEN
+        ROLLBACK;
+        SELECT 'No hay boletos disponibles para este evento y fecha.' AS Mensaje;
+    ELSE
+        -- Verificar si el usuario tiene suficiente saldo
+        IF saldoUsuario < precio THEN
+            -- Si no tiene suficiente saldo, apartar el boleto
+            UPDATE Boletos 
+            SET Estado = "Apartado"
+            WHERE idBoleto = idBoleto;
+
+            INSERT INTO TRANSACCIONES (fechaHora, monto, tipo, estado, idBoleto, IdComprador) 
+            VALUES (NOW(), precio, "Compra", "Procesando", idBoleto, idUsuario);
+
+            COMMIT;
+            SELECT 'Boleto apartado. Saldo insuficiente para completar la compra.' AS Mensaje;
+        ELSE
+            -- Si tiene suficiente saldo, comprar el boleto
+            UPDATE Usuarios
+            SET Saldo = saldoUsuario - precio
+            WHERE idUsuario = idUsuario;
+
+            UPDATE Boletos
+            SET estado = 'Vendido'
+            WHERE idBoleto = idBoleto;
+
+            INSERT INTO TRANSACCIONES (fechaHora, monto, tipo, estado, idBoleto, IdComprador) 
+            VALUES (NOW(), precio, "Compra", "Completada", idBoleto, idUsuario);
+
+            COMMIT;
+            SELECT 'Compra realizada exitosamente.' AS Mensaje;
+        END IF;
     END IF;
-    
-#DESIGNAMOS LA COMISION 
-SET @comision = @precio * 0.03;
+END;
+$$
 
-#SELECCIONAMOS EL SALDO DEL COMPRADOR Y LO ALMACENAMOS EN UNA VARIABLE LOCAL	
-SELECT us.saldo 
-into @saldo from usuarios us
-where us.idusuario = _idComprador;
+DELIMITER ;
 
-# SI EL SALDO ES MENOR AL PRECIO DEL BOLETO PONEMOS EL BOLETO COMO APARTADO
-IF @saldo < @precio then
-	update boletos 
-    set estado = "Apartado" where idboleto = @idboleto;
-    #GUARDAMOS LA TRANSACCION
-    insert into transacciones (fechahora, monto, tipo, estado, idBoleto, idComprador, idVendedor )
-    values (now(), @precio, "Compra", "Procesando", @idBoleto, _idComprador, @idVendedor);
-    
-    commit;
-end if;
+CALL COMPRAR_BOLETO_SISTEMA('Concierto Rock', '2025-06-15 20:00:00', 5);
+DROP PROCEDURE IF EXISTS COMPRAR_bOLETO_SISTEMA; 
 
-#LE QUITAMOS EL DINERO DEL BOLETO AL COMPRADOR
-UPDATE USUARIOS
-SET SALDO = SALDO - @precio
-WHERE IDUSUARIO = _IDCOMPRADOR; 
-
-#LE DEPOSITAMOS EL DINERO MENOS LA COMISION AL VENDEDOR
-UPDATE USUARIOS
-SET SALDO = SALDO + (@precio - @comision)
-WHERE IDUSUARIO = _IDVENDEDOR;
-
-#ACTUALIZAMOS EL ESTADO DEL BOLETO A VENDIDO Y POR ENDE NO DISPONIBLE PARA COMPRAR
-UPDATE Boletos 
-SET estado = "Vendido", idUsuario = _idComprador
-   WHERE idBoleto = @idBoleto;
-
-#GUARDAMOS LA TRANSACCION
-INSERT INTO Transacciones (monto, tipo, estado, idBoleto, idComprador, idVendedor)
-VALUES (@precio, 'Reventa', 'Completada', @idBoleto, _idComprador, _idVendedor);
-
-
-COMMIT;
-
-END $$
-
-DELIMITER ;   
-
-DROP procedure IF exists COMPRAR_BOLETO;
 SELECT SALDO FROM USUARIOS;
