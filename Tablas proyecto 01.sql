@@ -12,7 +12,7 @@ CREATE TABLE Usuarios (
     idUsuario INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     nombre VARCHAR(20) NOT NULL,
-    contraseña_hash VARCHAR(30) NOT NULL,
+    contraseña_hash VARCHAR(100) NOT NULL,
     apellidoPaterno VARCHAR(20) NOT NULL,
     apellidoMaterno VARCHAR(20) NOT NULL,
     fechaNacimiento DATE NOT NULL,
