@@ -4,27 +4,60 @@
  */
 package boletos.presentacion;
 
+import boletos.control.ControlComprarBoletos;
+import boletos.dtos.UsuarioDTO;
+import boletos.entidades.Boleto;
+import boletos.persistencia.UsuariosDAO;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author jorge
  */
 public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
-
+    private final ControlComprarBoletos control;
     /**
      * Creates new form ComprarBoletosDisponibilidad
      */
-    public ComprarBoletosDisponibilidad() {
+    public ComprarBoletosDisponibilidad(ControlComprarBoletos control, UsuarioDTO usuarioDTO) {
         // Agregar un listener para la selección de filas
+        this.control = control;
+        setLocationRelativeTo(null);
+        initComponents();
+        this.llenarTablaBoletos();
         tblBoletos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int selectedRow = tblBoletos.getSelectedRow();
                 if (selectedRow != -1) {
                     int idBoleto = (int) tblBoletos.getValueAt(selectedRow, 0);
                     // AQUI OBTIENE EL ID DEL BOLETO SELECCIONADO PARA DESPUES QUE SE EJECUTE LA COMPRA
+                    System.out.println(idBoleto);
                 }
             }
         });
-        initComponents();
+    }
+    
+    public void llenarTablaBoletos(){
+        List<Boleto> listaBoletos = this.control.consultarListaBoletos();
+        
+        //sacamos el modelo de la tabla para poder manipular sus datos
+        DefaultTableModel modelo = (DefaultTableModel)this.tblBoletos.getModel();
+        modelo.setRowCount(0);
+        // por cada artista devuelto por la clase control, lo agregamos a la jtable
+        for (Boleto boleto : listaBoletos) {
+            Object[] filaTabla = {
+                boleto.getIdBoleto(),
+                boleto.getEvento(),
+                boleto.getFecha(),
+                boleto.getAsiento(),
+                boleto.getFila(),
+                boleto.getNumSerie(),
+                boleto.getEstado(),
+                boleto.getPrecio()  
+            };
+            modelo.addRow(filaTabla);
+        }
     }
 
     /**
@@ -119,6 +152,11 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
 
         btnRegresar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRegresar.setText("REGRESAR");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
 
         btnComprar1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnComprar1.setText("COMPRAR");
@@ -157,6 +195,11 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
     private void btnComprar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprar1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnComprar1ActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        control.regresar();
+        dispose();
+    }//GEN-LAST:event_btnRegresarActionPerformed
 
   
     // Variables declaration - do not modify//GEN-BEGIN:variables

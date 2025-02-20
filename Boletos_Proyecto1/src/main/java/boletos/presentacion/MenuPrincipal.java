@@ -4,12 +4,13 @@
  */
 package boletos.presentacion;
 
+import boletos.control.ControlComprarBoletos;
 import boletos.dtos.UsuarioDTO;
+import boletos.persistencia.BoletosDAO;
+import boletos.persistencia.ConexionBD;
 
-/**
- *
- * @author jorge
- */
+
+
 public class MenuPrincipal extends javax.swing.JFrame {
     UsuarioDTO usuarioActual;
     /**
@@ -17,6 +18,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
      */
     public MenuPrincipal(UsuarioDTO usuarioActual) {
         this.usuarioActual = usuarioActual;
+        setLocationRelativeTo(null);
         initComponents();
     }
 
@@ -161,7 +163,12 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnComprarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprarActionPerformed
-        // TODO add your handling code here:
+        ConexionBD manejadorConexiones = new ConexionBD();
+        BoletosDAO boletosDAO = new BoletosDAO(manejadorConexiones);
+        ControlComprarBoletos control = new ControlComprarBoletos(boletosDAO, this, usuarioActual);
+        control.iniciarCasoUso();
+        this.dispose();
+        
     }//GEN-LAST:event_btnComprarActionPerformed
 
     private void btnMisBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMisBoletosActionPerformed

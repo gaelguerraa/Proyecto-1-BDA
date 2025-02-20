@@ -52,7 +52,7 @@
               <Component id="btnIngresar" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btnRegistrar" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="38" max="32767" attributes="0"/>
+              <EmptySpace pref="49" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -162,9 +162,6 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JPasswordField" name="txtContrase&#xf1;a">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="jPasswordField1"/>
-              </Properties>
             </Component>
           </SubComponents>
         </Container>

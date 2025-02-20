@@ -20,6 +20,7 @@ public class IniciarSesion extends javax.swing.JFrame {
      */
     public IniciarSesion(ControlIniciarSesion control) {
         this.control = control;
+        setLocationRelativeTo(null);
         initComponents();
     }
 
@@ -88,8 +89,6 @@ public class IniciarSesion extends javax.swing.JFrame {
         jLabel3.setText("CONTRASEÑA");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         jPanel2.add(jLabel3);
-
-        txtContraseña.setText("jPasswordField1");
         jPanel2.add(txtContraseña);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -135,7 +134,7 @@ public class IniciarSesion extends javax.swing.JFrame {
                 .addComponent(btnIngresar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnRegistrar)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         pack();
