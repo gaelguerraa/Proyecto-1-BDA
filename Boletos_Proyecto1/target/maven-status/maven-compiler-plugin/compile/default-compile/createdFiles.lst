@@ -4,11 +4,13 @@ boletos\dtos\UsuarioDTO.class
 boletos\entidades\Boleto.class
 boletos\entidades\Usuario.class
 boletos\control\controlAgregarSaldo.class
+boletos\dtos\BoletoDTO.class
 boletos\presentacion\Historial$1.class
 boletos\presentacion\VentaBoletos$2.class
 boletos\presentacion\ComprarBoletosDisponibilidad$1.class
-itson\boletos_proyecto1\boletos_main.class
+itson\boletos_proyecto1\main.class
 boletos\presentacion\ComprarBoletosDisponibilidad$3.class
+boletos\presentacion\BoletoAdquirido.class
 boletos\presentacion\Historial$2.class
 boletos\presentacion\MisBoletos$1.class
 boletos\presentacion\MenuPrincipal$3.class
@@ -18,6 +20,7 @@ boletos\presentacion\IniciarSesion.class
 boletos\control\ControlIniciarSesion.class
 boletos\presentacion\RegistrarUsuario.class
 boletos\presentacion\AgregarSaldo$1.class
+boletos\presentacion\BoletoAdquirido$1.class
 boletos\presentacion\ComprarBoletosBusqueda.class
 boletos\persistencia\UsuariosDAO.class
 boletos\presentacion\RegistrarUsuario$2.class
@@ -30,7 +33,6 @@ boletos\presentacion\MisBoletos$2.class
 boletos\presentacion\MenuPrincipal.class
 boletos\presentacion\ComprarBoletosDisponibilidad$2.class
 boletos\presentacion\MenuPrincipal$2.class
-boletos\presentacion\main.class
 boletos\presentacion\MenuPrincipal$1.class
 boletos\presentacion\ActualizarUsuario$2.class
 boletos\presentacion\AgregarSaldo$2.class

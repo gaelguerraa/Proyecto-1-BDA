@@ -1,5 +1,6 @@
 package boletos.persistencia;
 
+import boletos.dtos.BoletoDTO;
 import boletos.entidades.Boleto;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,5 +52,30 @@ public class BoletosDAO {
         }
         
         return listaBoletos;
+    }
+    
+    //Comprar Boletos del sistema
+    public boolean comprarBoletoSistema(Integer idBoleto, Integer idUsuario){
+        //Storage Procedure
+        String codigoSQL = """
+                           CALL comprar_boleto_sistema(?,?);
+                           """;
+        
+        try {
+            //Ejecucion del Storage Procedure con los parametros del metodo
+            Connection conexion = this.manejadorConexiones.crearConexion();
+            PreparedStatement comando = conexion.prepareStatement(codigoSQL);
+            comando.setInt(1, idBoleto);
+            comando.setInt(2, idUsuario);
+            ResultSet resultadosConsulta = comando.executeQuery();
+            
+            //Si la compra es exitosa retorna true
+            return true;
+        } catch (SQLException ex) {
+            System.err.println("Error al comprar los boletos: " + ex.getMessage());
+            //Si la compra falla retorna false
+            return false;
+        }
+    
     }
 }

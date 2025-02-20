@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
     private final ControlComprarBoletos control;
+    private Integer idBoleto;
     /**
      * Creates new form ComprarBoletosDisponibilidad
      */
@@ -30,7 +31,7 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
             if (!e.getValueIsAdjusting()) {
                 int selectedRow = tblBoletos.getSelectedRow();
                 if (selectedRow != -1) {
-                    int idBoleto = (int) tblBoletos.getValueAt(selectedRow, 0);
+                    this.idBoleto = (int) tblBoletos.getValueAt(selectedRow, 0);
                     // AQUI OBTIENE EL ID DEL BOLETO SELECCIONADO PARA DESPUES QUE SE EJECUTE LA COMPRA
                     System.out.println(idBoleto);
                 }
@@ -194,6 +195,9 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
 
     private void btnComprar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprar1ActionPerformed
         // TODO add your handling code here:
+        control.comprarBoletosSistema(this.idBoleto);
+
+        
     }//GEN-LAST:event_btnComprar1ActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed

@@ -53,5 +53,5 @@ public class ControlIniciarSesion {
     public UsuarioDTO getUsuarioActual() {
         return usuarioActual;
     }
-}
+} 
 

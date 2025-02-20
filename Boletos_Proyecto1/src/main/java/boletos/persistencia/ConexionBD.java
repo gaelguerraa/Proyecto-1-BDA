@@ -8,7 +8,7 @@ public class ConexionBD {
     //informacion para conectarte a la bd
     private final String cadenaConexion = "jdbc:mysql://localhost/bdboletos";
     private final String usuario = "root";
-    private final String contrasenia = "220370";
+    private final String contrasenia = "tu contraseña de workbench";
     
     public Connection crearConexion() throws SQLException {
         // establece conexion con el server bd
