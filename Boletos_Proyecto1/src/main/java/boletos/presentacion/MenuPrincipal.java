@@ -77,6 +77,11 @@ public class MenuPrincipal extends javax.swing.JFrame {
         btnAgregarSaldo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         btnSalir.setText("SALIR");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalirActionPerformed(evt);
+            }
+        });
 
         btnComprar.setBackground(new java.awt.Color(204, 204, 204));
         btnComprar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -182,6 +187,11 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private void btnHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHistorialActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnHistorialActionPerformed
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_btnSalirActionPerformed
 
     /**
      * @param args the command line arguments

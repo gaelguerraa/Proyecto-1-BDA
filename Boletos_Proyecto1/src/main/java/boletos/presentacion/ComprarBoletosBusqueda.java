@@ -4,17 +4,26 @@
  */
 package boletos.presentacion;
 
+import boletos.control.ControlComprarBoletos;
+import boletos.dtos.UsuarioDTO;
+
 /**
  *
  * @author jorge
  */
 public class ComprarBoletosBusqueda extends javax.swing.JFrame {
 
+    private final ControlComprarBoletos control;
+    private Integer idBoleto;
+
     /**
      * Creates new form ComprarBoletosBusqueda
      */
-    public ComprarBoletosBusqueda() {
+    public ComprarBoletosBusqueda(ControlComprarBoletos control) {
+        this.control = control;
+        setLocationRelativeTo(null);
         initComponents();
+
     }
 
     /**
@@ -70,6 +79,11 @@ public class ComprarBoletosBusqueda extends javax.swing.JFrame {
 
         btnBuscarEvento.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnBuscarEvento.setText("BUSCAR");
+        btnBuscarEvento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarEventoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -100,11 +114,12 @@ public class ComprarBoletosBusqueda extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setText("FECHA");
 
-        boxAnio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        boxAnio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "2026", "2027", "2028", "2029", "2030" }));
+        boxAnio.setToolTipText("");
 
-        boxDias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        boxDias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
 
-        boxMeses.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        boxMeses.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 3, 12)); // NOI18N
         jLabel4.setText("Año");
@@ -167,6 +182,11 @@ public class ComprarBoletosBusqueda extends javax.swing.JFrame {
         );
 
         btnRegresar.setText("REGRESAR");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -200,7 +220,19 @@ public class ComprarBoletosBusqueda extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-  
+    private void btnBuscarEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarEventoActionPerformed
+        control.busquedaNombre(this.txtEvento.getText());
+        this.dispose();
+
+    }//GEN-LAST:event_btnBuscarEventoActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+
+        control.regresar();
+        this.dispose();
+    }//GEN-LAST:event_btnRegresarActionPerformed
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boxAnio;
     private javax.swing.JComboBox<String> boxDias;
