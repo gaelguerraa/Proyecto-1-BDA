@@ -293,19 +293,18 @@ DELIMITER ;
 -- Cambiar numero de serie cuando cambia de dueño un boleto
 
 DELIMITER $$
+
 CREATE TRIGGER actualizar_numero_interno
 BEFORE UPDATE ON BOLETOS
 FOR EACH ROW
-
 BEGIN
-
-IF NEW.idUsuario<>OLD.idUsuario THEN
-UPDATE BOLETOS
-SET numeroSerie= LEFT(uuid(),8)
-WHERE idBoleto=NEW.idBoleto;
+IF NEW.idUsuario <> OLD.idUsuario THEN
+SET NEW.numeroSerie = LEFT(UUID(), 8);
 END IF;
-END; $$ 
- 
+END $$
+
+DELIMITER ;
+
 
 
 
