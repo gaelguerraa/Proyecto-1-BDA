@@ -1,6 +1,7 @@
 boletos\persistencia\ConexionBD.class
 boletos\entidades\Usuario.class
 boletos\presentacion\Historial$1.class
+boletos\presentacion\MenuPrincipal$6.class
 boletos\presentacion\VentaBoletos$2.class
 boletos\presentacion\ComprarBoletosDisponibilidad$1.class
 boletos\presentacion\Historial$2.class
@@ -28,9 +29,9 @@ boletos\presentacion\MisBoletos.class
 boletos\presentacion\ReciboBoleto.class
 boletos\dtos\UsuarioDTO.class
 boletos\entidades\Boleto.class
-boletos\control\controlAgregarSaldo.class
 boletos\dtos\BoletoDTO.class
 boletos\presentacion\ComprarBoletosBusqueda$1.class
+boletos\control\ControlAgregarSaldo.class
 itson\boletos_proyecto1\main.class
 boletos\presentacion\ComprarBoletosDisponibilidad$3.class
 boletos\presentacion\VentaBoletos.class

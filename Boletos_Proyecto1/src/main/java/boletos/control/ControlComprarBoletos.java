@@ -55,17 +55,20 @@ public class ControlComprarBoletos {
             //Si la compra es exitosa se abre boletoAdquirido
             System.out.println(compraExitosa);
             JOptionPane.showMessageDialog(frmComprarBoletosDisponibilidad, "Se compro el boleto " + idBoleto + " con exito!", "Compra Exitosa!", JOptionPane.INFORMATION_MESSAGE);
-        }
+            frmMenuPrincipal.setVisible(true);
+            frmComprarBoletosDisponibilidad.dispose();
+        }   
         else{
             // se tiene que actualizar a apartado
             System.out.println(compraExitosa);
             JOptionPane.showMessageDialog(frmComprarBoletosDisponibilidad, "El boleto " + idBoleto + " no fue posible comprar, \n Sera apartado durante 10 minutos.", "Fallo", JOptionPane.INFORMATION_MESSAGE);
+            frmMenuPrincipal.setVisible(true);
+            frmComprarBoletosDisponibilidad.dispose();
         }
     }
     
     public void regresar(){
         this.frmMenuPrincipal.setVisible(true);
-        
     }
     
     //Ventana de boletoAdquirido

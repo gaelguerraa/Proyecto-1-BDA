@@ -5,9 +5,11 @@
 package boletos.presentacion;
 
 import boletos.control.ControlComprarBoletos;
+import boletos.control.ControlAgregarSaldo;
 import boletos.dtos.UsuarioDTO;
 import boletos.persistencia.BoletosDAO;
 import boletos.persistencia.ConexionBD;
+import boletos.persistencia.UsuariosDAO;
 
 
 
@@ -75,6 +77,11 @@ public class MenuPrincipal extends javax.swing.JFrame {
         btnAgregarSaldo.setToolTipText("");
         btnAgregarSaldo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         btnAgregarSaldo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAgregarSaldo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarSaldoActionPerformed(evt);
+            }
+        });
 
         btnSalir.setText("SALIR");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -192,6 +199,15 @@ public class MenuPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void btnAgregarSaldoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarSaldoActionPerformed
+        ConexionBD manejadorConexiones = new ConexionBD();
+        UsuariosDAO usuariosDAO = new UsuariosDAO(manejadorConexiones);
+        ControlAgregarSaldo control = new ControlAgregarSaldo(usuariosDAO, this, usuarioActual);
+        control.iniciarCasoUso();
+        this.dispose();
+        
+    }//GEN-LAST:event_btnAgregarSaldoActionPerformed
 
     /**
      * @param args the command line arguments
