@@ -3,6 +3,7 @@ boletos\persistencia\TransaccionDAO.class
 boletos\entidades\Usuario.class
 boletos\presentacion\Historial$1.class
 boletos\presentacion\MenuPrincipal$6.class
+boletos\control\ControlRegistrarUsuario.class
 boletos\presentacion\VentaBoletos$2.class
 boletos\presentacion\ComprarBoletosDisponibilidad$1.class
 boletos\presentacion\Historial$2.class
@@ -25,6 +26,7 @@ boletos\presentacion\ActualizarUsuario$2.class
 boletos\presentacion\AgregarSaldo$2.class
 boletos\entidades\Evento.class
 boletos\entidades\Transaccion.class
+boletos\entidades\Direccion.class
 boletos\presentacion\VentaBoletos$3.class
 boletos\presentacion\MenuPrincipal$4.class
 boletos\presentacion\ReciboBoleto$1.class
@@ -49,5 +51,6 @@ boletos\control\ControlComprarBoletos.class
 boletos\presentacion\ComprarBoletosDisponibilidad$2.class
 boletos\presentacion\MenuPrincipal$2.class
 boletos\persistencia\BoletosDAO.class
+boletos\presentacion\IniciarSesion$2.class
 boletos\presentacion\ActualizarUsuario.class
 boletos\presentacion\RegistrarUsuario$1.class

@@ -4,6 +4,7 @@
  */
 package boletos.entidades;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -17,15 +18,15 @@ public class Usuario {
     private String contrasena;
     private String apellidoPaterno;
     private String apellidoMaterno;
-    private String fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private Double saldo;
-    private Integer idDireccion;
+    private Direccion direccion;
     
     
     
     /*Constructor que recibe todos los datos del usuario*/
 
-    public Usuario(Integer idUsuario, String email, String nombre, String contrasena, String apellidoPaterno, String apellidoMaterno, String fechaNacimiento, Double saldo, Integer idDireccion) {
+    public Usuario(Integer idUsuario, String email, String nombre, String contrasena, String apellidoPaterno, String apellidoMaterno, LocalDate fechaNacimiento, Direccion direccion) {
         this.idUsuario = idUsuario;
         this.email = email;
         this.nombre = nombre;
@@ -33,30 +34,27 @@ public class Usuario {
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.fechaNacimiento = fechaNacimiento;
-        this.saldo = saldo;
-        this.idDireccion = idDireccion;
+        this.direccion = direccion;
     }
     
     /*Constructor que no recibe el id del usuario*/
 
-    public Usuario(String email, String nombre, String contrasena, String apellidoPaterno, String apellidoMaterno, String fechaNacimiento, Double saldo, Integer idDireccion) {
+    public Usuario(String email, String nombre, String contrasena, String apellidoPaterno, String apellidoMaterno, LocalDate fechaNacimiento, Direccion direccion) {
         this.email = email;
         this.nombre = nombre;
         this.contrasena = contrasena;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.fechaNacimiento = fechaNacimiento;
-        this.saldo = saldo;
-        this.idDireccion = idDireccion;
+        this.direccion = direccion;
+ 
     }
 
     public Usuario(Integer idUsuario, String contrasena) {
         this.idUsuario = idUsuario;
         this.contrasena = contrasena;
     }
-    
-    
-    
+
     /*Getters and Setters*/
 
     public Integer getIdUsuario() {
@@ -107,11 +105,11 @@ public class Usuario {
         this.apellidoMaterno = apellidoMaterno;
     }
 
-    public String getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(String fechaNacimiento) {
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
@@ -123,13 +121,15 @@ public class Usuario {
         this.saldo = saldo;
     }
 
-    public Integer getIdDireccion() {
-        return idDireccion;
+    public Direccion getDireccion() {
+        return direccion;
     }
 
-    public void setIdDireccion(Integer idDireccion) {
-        this.idDireccion = idDireccion;
+    public void setDireccion(Direccion direccion) {
+        this.direccion = direccion;
     }
+
+
 
     @Override
     public int hashCode() {
@@ -153,11 +153,6 @@ public class Usuario {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "Usuarios{" + "idUsuario=" + idUsuario + ", email=" + email + ", nombre=" + nombre + ", contrasena=" + contrasena + ", apellidoPaterno=" + apellidoPaterno + ", apellidoMaterno=" + apellidoMaterno + ", fechaNacimiento=" + fechaNacimiento + ", saldo=" + saldo + ", idDireccion=" + idDireccion + '}';
-    }
-    
     
     
 }

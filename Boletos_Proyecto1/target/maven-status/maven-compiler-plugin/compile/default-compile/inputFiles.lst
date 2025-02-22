@@ -1,11 +1,13 @@
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\control\ControlAgregarSaldo.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\control\ControlComprarBoletos.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\control\ControlIniciarSesion.java
+C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\control\ControlRegistrarUsuario.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\dtos\BoletoDTO.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\dtos\EventoDTO.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\dtos\TransaccionDTO.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\dtos\UsuarioDTO.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\entidades\Boleto.java
+C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\entidades\Direccion.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\entidades\Evento.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\entidades\Transaccion.java
 C:\Users\jorge\OneDrive\Documentos\GitHub\Proyecto-1-BDA\Boletos_Proyecto1\src\main\java\boletos\entidades\Usuario.java

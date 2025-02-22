@@ -5,6 +5,9 @@
 package boletos.presentacion;
 
 import boletos.control.ControlIniciarSesion;
+import boletos.control.ControlRegistrarUsuario;
+import boletos.persistencia.ConexionBD;
+import boletos.persistencia.UsuariosDAO;
 import javax.swing.JOptionPane;
 
 /**
@@ -110,6 +113,11 @@ public class IniciarSesion extends javax.swing.JFrame {
 
         btnRegistrar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnRegistrar.setText("REGISTRAR");
+        btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -151,6 +159,14 @@ public class IniciarSesion extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Credenciales incorrectas.");
         }
     }//GEN-LAST:event_btnIngresarActionPerformed
+
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        ConexionBD manejadorConexiones = new ConexionBD();
+        UsuariosDAO usuariosDAO = new UsuariosDAO(manejadorConexiones);
+        ControlRegistrarUsuario control = new ControlRegistrarUsuario(usuariosDAO, this);
+        control.iniciarCasoUso();
+        this.dispose();
+    }//GEN-LAST:event_btnRegistrarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

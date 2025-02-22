@@ -306,6 +306,32 @@ END $$
 DELIMITER ;
 
 
+DELIMITER $$
+
+CREATE PROCEDURE registrar_usuario(
+    IN p_email VARCHAR(255),
+    IN p_nombre VARCHAR(20),
+    IN p_contraseña_hash VARCHAR(120),
+    IN p_apellidoPaterno VARCHAR(20),
+    IN p_apellidoMaterno VARCHAR(20),
+    IN p_fechaNacimiento DATE,
+    IN p_calle VARCHAR(30),
+    IN p_ciudad VARCHAR(30),
+    IN p_estado VARCHAR(30)
+)
+BEGIN
+    DECLARE direccion_id INT;
+    INSERT INTO DireccionesUsuarios (calle, ciudad, estado) 
+    VALUES (p_calle, p_ciudad, p_estado);
+    SET direccion_id = LAST_INSERT_ID();
+    INSERT INTO Usuarios (email, nombre, contraseña_hash, apellidoPaterno, apellidoMaterno, fechaNacimiento, idDireccion)
+    VALUES (p_email, p_nombre, p_contraseña_hash, p_apellidoPaterno, p_apellidoMaterno, p_fechaNacimiento, direccion_id);
+END;
+$$
+
+DELIMITER ;
+
+
 
 
 
