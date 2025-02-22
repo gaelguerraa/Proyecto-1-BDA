@@ -84,19 +84,35 @@ END$$
 DELIMITER ;
 
 
-#6. Mostrar el historial de todas las transacciones del usuario
+#6. SABER LAS COMPRAS DE UN USUARIO
+SELECT 
+    T.IDTRANSACCION, 
+    E.NOMBRE AS Evento, 
+    E.FECHA, 
+    B.ASIENTO, 
+    B.FILA, 
+    B.NUMEROSERIE, 
+    T.ESTADO, 
+    T.MONTO, 
+    T.TIPO  
+FROM TRANSACCIONES T  
+JOIN BOLETOS B ON T.IDBOLETO = B.IDBOLETO  
+JOIN EVENTOS E ON B.IDEVENTO = E.IDEVENTO  
+WHERE T.IDCOMPRADOR = ?; 
 
-SELECT t.idTransaccion,t.fechaHora,t.monto,t.tipo AS tipoTransaccion,t.estado AS estadoTransaccion,b.numeroSerie AS numeroBoleto,b.fila,b.asiento,e.nombre AS nombreEvento,e.fecha AS fechaEvento,u.nombre AS nombreVendedor,u2.nombre AS nombreComprador
-FROM transacciones as t
-INNER JOIN boletos b ON t.idBoleto = b.idBoleto
-INNER JOIN eventos e ON b.idEvento = e.idEvento
-LEFT JOIN usuarios u ON t.idVendedor = u.idUsuario
-#Se vuelve usar la misma tabla para hacer el join y saber el nombre del comprador por si el usuario compro
-LEFT JOIN usuarios u2 ON t.idComprador = u2.idUsuario
-#Filtrar usuario sin importar que haya sido comprador o vendedor
-WHERE t.idComprador = 1 #Id del usuario a buscar 
-OR t.idVendedor = 1 #Id del usuario a buscar	
-    
-#Ordenar por fecha  
-ORDER BY t.fechaHora DESC;
+#7. SABER LAS VENTAS DE UN USUARIO
+SELECT 
+    T.IDTRANSACCION, 
+    E.NOMBRE AS Evento, 
+    E.FECHA, 
+    B.ASIENTO, 
+    B.FILA, 
+    B.NUMEROSERIE, 
+    T.ESTADO, 
+    T.MONTO, 
+    T.TIPO  
+FROM TRANSACCIONES T  
+JOIN BOLETOS B ON T.IDBOLETO = B.IDBOLETO  
+JOIN EVENTOS E ON B.IDEVENTO = E.IDEVENTO  
+WHERE T.IDVENDEDOR = ?; 
     
