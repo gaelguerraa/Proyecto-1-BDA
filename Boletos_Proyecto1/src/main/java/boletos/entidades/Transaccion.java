@@ -7,6 +7,7 @@ import java.sql.Timestamp;
  * @author gael_
  */
 public class Transaccion {
+<<<<<<< HEAD
     // Atributos actuales utilizados en consultarCompras y consultarVentas
     private Integer idTransaccion;
     private String evento;  // Evento relacionado
@@ -41,6 +42,18 @@ public class Transaccion {
     // Constructor con los atributos viejos 
     public Transaccion(Integer idTransaccion, Timestamp fechaHora, double monto, String tipo, String estado, 
                        Integer idBoleto, Integer idComprador, Integer idVendedor) {
+=======
+    private Integer idTransaccion;
+    private Timestamp fechaHora;
+    private double monto;
+    private String tipo;
+    private String estado;
+    private Integer idBoleto;
+    private Integer idComprador;
+    private Integer idVendedor;
+
+    public Transaccion(Integer idTransaccion, Timestamp fechaHora, double monto, String tipo, String estado, Integer idBoleto, Integer idComprador, Integer idVendedor) {
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
         this.idTransaccion = idTransaccion;
         this.fechaHora = fechaHora;
         this.monto = monto;
@@ -51,7 +64,10 @@ public class Transaccion {
         this.idVendedor = idVendedor;
     }
 
+<<<<<<< HEAD
     // Getters y Setters para los nuevos atributos
+=======
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
     public Integer getIdTransaccion() {
         return idTransaccion;
     }
@@ -60,6 +76,7 @@ public class Transaccion {
         this.idTransaccion = idTransaccion;
     }
 
+<<<<<<< HEAD
     public String getEvento() {
         return evento;
     }
@@ -113,6 +130,21 @@ public class Transaccion {
     }
 
     public void setMonto(Double monto) {
+=======
+    public Timestamp getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(Timestamp fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(double monto) {
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
         this.monto = monto;
     }
 
@@ -124,6 +156,7 @@ public class Transaccion {
         this.tipo = tipo;
     }
 
+<<<<<<< HEAD
     // Getters y Setters para los atributos viejos
     public Timestamp getFechaHora() {
         return fechaHora;
@@ -131,6 +164,14 @@ public class Transaccion {
 
     public void setFechaHora(Timestamp fechaHora) {
         this.fechaHora = fechaHora;
+=======
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
     }
 
     public Integer getIdBoleto() {
@@ -156,4 +197,9 @@ public class Transaccion {
     public void setIdVendedor(Integer idVendedor) {
         this.idVendedor = idVendedor;
     }
+<<<<<<< HEAD
+=======
+    
+    
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
 }
