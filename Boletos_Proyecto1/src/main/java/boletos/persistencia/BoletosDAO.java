@@ -1,6 +1,7 @@
 package boletos.persistencia;
 
 import boletos.dtos.BoletoDTO;
+import boletos.dtos.UsuarioDTO;
 import boletos.entidades.Boleto;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +22,7 @@ public class BoletosDAO {
     // hacer para que solo devuelve los disponbles
     public List<Boleto> consultarBoletos() {
         String codigoSQL = """
-                           SELECT B.idBoleto, E.nombre, E.fecha, B.asiento, B.fila, B.numeroSerie, B.estado, B.precioOriginal
+                           SELECT B.idBoleto, E.nombre, E.fecha, B.asiento, B.fila, B.numeroSerie, B.estado, B.precioOriginal, E.recinto
                            FROM boletos AS B
                            INNER JOIN eventos AS E ON B.idEvento = E.idEvento
                            WHERE B.estado = 'Disponible';
@@ -42,8 +43,9 @@ public class BoletosDAO {
                 String numSerie = resultadosConsulta.getString("numeroSerie");
                 String estado = resultadosConsulta.getString("estado");
                 Double precio = resultadosConsulta.getDouble("precioOriginal");
+                String recinto = resultadosConsulta.getString("recinto");
 
-                Boleto boleto = new Boleto(idBoleto, numSerie, fila, asiento, precio, estado, evento, fecha);
+                Boleto boleto = new Boleto(idBoleto, numSerie, fila, asiento, precio, estado, evento, fecha, recinto);
                 listaBoletos.add(boleto);
             }
         } catch (SQLException ex) {
@@ -55,7 +57,7 @@ public class BoletosDAO {
 
     public List<Boleto> consultarBoletosPorNombre(String nombre) {
         String codigoSQL = """
-                           SELECT B.idBoleto, E.nombre, E.fecha, B.asiento, B.fila, B.numeroSerie, B.estado, B.precioOriginal
+                           SELECT B.idBoleto, E.nombre, E.fecha, B.asiento, B.fila, B.numeroSerie, B.estado, B.precioOriginal, E.recinto
                            FROM boletos AS B
                            INNER JOIN eventos AS E ON B.idEvento = E.idEvento
                            WHERE B.estado = 'Disponible' AND E.nombre = ?;
@@ -77,8 +79,9 @@ public class BoletosDAO {
                 String numSerie = resultadosConsulta.getString("numeroSerie");
                 String estado = resultadosConsulta.getString("estado");
                 Double precio = resultadosConsulta.getDouble("precioOriginal");
-
-                Boleto boleto = new Boleto(idBoleto, numSerie, fila, asiento, precio, estado, evento, fecha);
+                String recinto = resultadosConsulta.getString("recinto");
+                
+                Boleto boleto = new Boleto(idBoleto, numSerie, fila, asiento, precio, estado, evento, fecha, recinto);
                 listaBoletos.add(boleto);
             }
         } catch (SQLException ex) {
@@ -140,6 +143,39 @@ public class BoletosDAO {
 
         return false;
     }
-    
-    //
+
+    public List<Boleto> consultarBoletosPorUsuario(Integer idUsuario) {
+        String codigoSQL = """
+                           CALL obtenerBoletos(?);
+                           """;
+        List<Boleto> listaBoletos = new LinkedList<>();
+        try {
+            Connection conexion = this.manejadorConexiones.crearConexion();
+            PreparedStatement comando = conexion.prepareStatement(codigoSQL);
+            comando.setInt(1, idUsuario);
+            ResultSet resultadosConsulta = comando.executeQuery();
+
+            // recorre las filas de la consulta
+            while (resultadosConsulta.next()) {
+                Integer idBoleto = resultadosConsulta.getInt("idBoleto");
+                String evento = resultadosConsulta.getString("nombre");
+                String recinto = resultadosConsulta.getString("recinto");
+                String estado = resultadosConsulta.getString("estado");
+                Timestamp fecha = resultadosConsulta.getTimestamp("fecha");
+                String asiento = resultadosConsulta.getString("asiento");
+                String fila = resultadosConsulta.getString("fila");
+                String numSerie = resultadosConsulta.getString("numeroSerie");
+                Double precio = resultadosConsulta.getDouble("precioOriginal");
+                
+                Boleto boleto = new Boleto(idBoleto, numSerie, fila, asiento, precio, estado, evento, fecha, recinto);
+                listaBoletos.add(boleto);
+                
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al consultar los boletos: " + ex.getMessage());
+        }
+
+        return listaBoletos;
+    }
+
 }

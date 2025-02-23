@@ -1,9 +1,11 @@
 package boletos.control;
 
 import boletos.dtos.UsuarioDTO;
+import boletos.entidades.Boleto;
 import boletos.persistencia.BoletosDAO;
 import boletos.presentacion.MenuPrincipal;
 import boletos.presentacion.MisBoletos;
+import java.util.List;
 
 
 public class ControlVenderBoletos {
@@ -17,14 +19,15 @@ public class ControlVenderBoletos {
         this.boletosDAO = boletosDAO;
         this.usuarioActual = usuarioActual;
     }
-    
-    public void mostrarMisBoletos(){
-        
-    }
+   
     
     public void iniciarCasoUso(){
         this.frmMisBoletos = new MisBoletos(this);
         frmMisBoletos.setVisible(true);
+    }
+    
+    public List<Boleto> mostrarMisBoletos(){
+        return this.boletosDAO.consultarBoletosPorUsuario(usuarioActual.getIdUsuario());
     }
     
     public void regresar(){

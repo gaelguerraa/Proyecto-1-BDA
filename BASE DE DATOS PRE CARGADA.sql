@@ -341,6 +341,7 @@ BEGIN
         B.idBoleto, 
         E.nombre,
         E.recinto,
+        B.estado,
         E.fecha, 
         B.asiento, 
         B.fila, 

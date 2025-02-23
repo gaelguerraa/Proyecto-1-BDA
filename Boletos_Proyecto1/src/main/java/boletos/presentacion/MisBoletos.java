@@ -5,6 +5,9 @@
 package boletos.presentacion;
 
 import boletos.control.ControlVenderBoletos;
+import boletos.entidades.Boleto;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -13,10 +16,45 @@ import boletos.control.ControlVenderBoletos;
 public class MisBoletos extends javax.swing.JFrame {
 
     private ControlVenderBoletos control;
+    private Integer idBoleto;
     
     public MisBoletos(ControlVenderBoletos control) {
         this.control = control;
+        setLocationRelativeTo(null);
         initComponents();
+        this.llenarTablaBoletos();
+        tblBoletos.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = tblBoletos.getSelectedRow();
+                if (selectedRow != -1) {
+                    this.idBoleto = (int) tblBoletos.getValueAt(selectedRow, 0);
+                    // AQUI OBTIENE EL ID DEL BOLETO SELECCIONADO PARA DESPUES QUE SE EJECUTE LA COMPRA
+                    System.out.println(idBoleto);
+                }
+            }
+        });
+    }
+    
+    public void llenarTablaBoletos(){
+        List<Boleto> listaBoletos = this.control.mostrarMisBoletos();
+        
+        //sacamos el modelo de la tabla para poder manipular sus datos
+        DefaultTableModel modelo = (DefaultTableModel)this.tblBoletos.getModel();
+        modelo.setRowCount(0);
+        // por cada artista devuelto por la clase control, lo agregamos a la jtable
+        for (Boleto boleto : listaBoletos) {
+            Object[] filaTabla = {
+                boleto.getIdBoleto(),
+                boleto.getEvento(),
+                boleto.getRecinto(),
+                boleto.getFecha(),
+                boleto.getAsiento(),
+                boleto.getFila(),
+                boleto.getNumSerie(),
+                boleto.getPrecio()  
+            };
+            modelo.addRow(filaTabla);
+        }
     }
 
     /**
@@ -144,7 +182,10 @@ public class MisBoletos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        // TODO add your handling code here:
+        
+        
+        
+        
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed

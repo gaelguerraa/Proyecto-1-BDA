@@ -18,16 +18,16 @@ import javax.swing.table.DefaultTableModel;
 public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
     private final ControlComprarBoletos control;
     private Integer idBoleto;
-    private String nombre;
+    private String nombreEvento;
     //fecha
     
     /**
      * Creates new form ComprarBoletosDisponibilidad
      */
-    public ComprarBoletosDisponibilidad(ControlComprarBoletos control, String nombre) {
+    public ComprarBoletosDisponibilidad(ControlComprarBoletos control, String nombreEvento) {
         // Agregar un listener para la selección de filas
         this.control = control;
-        this.nombre = nombre;
+        this.nombreEvento = nombreEvento;
         //fecha
         setLocationRelativeTo(null);
         initComponents();
@@ -45,7 +45,7 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
     }
     
     public void llenarTablaBoletos(){
-        List<Boleto> listaBoletos = this.control.consultarListaBoletosNombre(nombre);
+        List<Boleto> listaBoletos = this.control.consultarListaBoletosNombre(nombreEvento);
         
         //sacamos el modelo de la tabla para poder manipular sus datos
         DefaultTableModel modelo = (DefaultTableModel)this.tblBoletos.getModel();

@@ -9,6 +9,7 @@ public class Boleto {
     private String asiento;
     private Double precio;
     private String estado;
+    private String recinto;
     private String evento;
     private Timestamp fecha;
 
@@ -16,7 +17,7 @@ public class Boleto {
         
     }
 
-    public Boleto(Integer idBoleto, String numSerie, String fila, String asiento, Double precio, String estado, String evento, Timestamp fecha) {
+    public Boleto(Integer idBoleto, String numSerie, String fila, String asiento, Double precio, String estado, String evento, Timestamp fecha, String recinto) {
         this.idBoleto = idBoleto;
         this.numSerie = numSerie;
         this.fila = fila;
@@ -25,7 +26,10 @@ public class Boleto {
         this.estado = estado;
         this.evento = evento;
         this.fecha = fecha;
+        this.recinto = recinto;
     }
+    
+
 
     public Boleto(String numSerie, String fila, String asiento, Double precio, String estado) {
         this.numSerie = numSerie;
@@ -97,6 +101,14 @@ public class Boleto {
 
     public void setFecha(Timestamp fecha) {
         this.fecha = fecha;
+    }
+
+    public String getRecinto() {
+        return recinto;
+    }
+
+    public void setRecinto(String recinto) {
+        this.recinto = recinto;
     }
     
 }
