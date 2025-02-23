@@ -4,16 +4,18 @@
  */
 package boletos.presentacion;
 
+import boletos.control.ControlVenderBoletos;
+
 /**
  *
  * @author jorge
  */
 public class MisBoletos extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MisBoletos
-     */
-    public MisBoletos() {
+    private ControlVenderBoletos control;
+    
+    public MisBoletos(ControlVenderBoletos control) {
+        this.control = control;
         initComponents();
     }
 
@@ -64,7 +66,7 @@ public class MisBoletos extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Evento", "Fecha", "Asiento", "Fila", "Serie", "Estado", "Precio Original"
+                "ID", "Evento", "Recinto", "Fecha", "Asiento", "Fila", "Serie", "Precio Original"
             }
         ) {
             Class[] types = new Class [] {
@@ -106,6 +108,11 @@ public class MisBoletos extends javax.swing.JFrame {
 
         btnRegresar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRegresar.setText("REGRESAR");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -139,6 +146,11 @@ public class MisBoletos extends javax.swing.JFrame {
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnVenderActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        control.regresar();
+        this.dispose();
+    }//GEN-LAST:event_btnRegresarActionPerformed
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
