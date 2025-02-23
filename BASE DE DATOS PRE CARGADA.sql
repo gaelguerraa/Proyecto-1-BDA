@@ -1,6 +1,7 @@
 CREATE DATABASE bdBoletos;
 USE bdBoletos;
 
+-- Tablas de la BD
 CREATE TABLE DireccionesUsuarios (
     idDireccion INT AUTO_INCREMENT PRIMARY KEY,
     calle VARCHAR(30) NOT NULL,
@@ -63,6 +64,7 @@ CREATE TABLE Transacciones (
 );
 
 -- FUNCIÓN PARA ACTUALIZAR EDADES CADA AÑO
+-- Crea el atributo edad en usuarios y le asigna la diferencia de años entre su año de nacimiento y el año actual
 DELIMITER //
 CREATE PROCEDURE ActualizarEdades()
 BEGIN
@@ -72,14 +74,16 @@ END //
 DELIMITER ;
 
 -- EVENTO PARA EJECUTAR LA FUNCIÓN AUTOMÁTICAMENTE CADA AÑO (EL 1 DE ENERO)
+-- Depues de un año se vuelve a llamar la funcion
 CREATE EVENT IF NOT EXISTS EventoActualizarEdades
 ON SCHEDULE EVERY 1 YEAR STARTS TIMESTAMP(CURDATE(), '00:00:00')
 DO CALL ActualizarEdades();
 
--- VISTA BOLETOS SIN NUM INTERNO
+-- VISTA BOLETOS SIN NUMERO INTERNO
 CREATE VIEW boletosView AS SELECT idBoleto,numeroSerie,fila,asiento,precioOriginal,estado,idEvento,idUsuario FROM boletos;
 
--- SP PARA BUSCAR POR FECHA Y HORA
+-- PROCEDIMIENTO ALMACENADO PARA BUSCAR POR FECHA Y HORA
+-- Creamos una funcion que muestra los boletos de un evento que tengan la fecha y hora que el usuario introdujo y estan disponibles
 DELIMITER $$
 CREATE PROCEDURE buscarPorFechaYhora(IN _FECHAHORA DATETIME)
 BEGIN
@@ -94,41 +98,50 @@ END$$
 DELIMITER $$
 
 -- VISTA BOLETOS DISPONIBLES
+-- Vista para ver todos los eventos disponibles
 CREATE VIEW boletos_Disponibles AS
 SELECT B.idBoleto, E.nombre, E.fecha, B.asiento, B.fila, B.numeroSerie, B.estado, B.precioOriginal
 FROM boletos AS B
 INNER JOIN eventos AS E ON B.idEvento = E.idEvento
-WHERE B.estado = 'Disponible' and E.nombre = "Concierto Rock";
+WHERE B.estado = 'Disponible';
 
--- TRANSACCION PARA AÑADIR SALDO
+-- PROCEDIMIENTO ALMACENADO CON TRANSACCION PARA AÑADIR SALDO A UN USUARIO
+-- Añade el saldo dado al usuario dado
 DELIMITER $$
-CREATE PROCEDURE AÑADIR_SALDO (_IDUSUARIO INT, _SALDO DECIMAL(10,2))
-
+CREATE PROCEDURE AÑADIR_SALDO (
+    _IDUSUARIO INT, 
+    _SALDO DECIMAL(10,2)
+)
 BEGIN
-START TRANSACTION;
+    START TRANSACTION;
 
-UPDATE USUARIOS 
-SET SALDO = SALDO + _SALDO
-WHERE IDUSUARIO = _IDUSUARIO;
+    -- Se actualiza el saldo del usuario
+    UPDATE USUARIOS 
+    SET SALDO = SALDO + _SALDO
+    WHERE IDUSUARIO = _IDUSUARIO;
 
-COMMIT;
-ROLLBACK;
-END; $$
+    COMMIT;
+    ROLLBACK;
 
+END $$
 DELIMITER ;
 
--- TRANSACCION PARA COMPRAR BOLETOS SISTEMA
+-- PROCEDIMIENTO ALMACENADO CON TRANSACCION PARA QUE EL USUARIO COMPRE UN BOLETO AL SISTEMA
+-- Recibe el id del boleto a comprar y el id del usuario comprador
 DELIMITER $$
 CREATE PROCEDURE comprar_boleto_sistema(p_idBoleto int, p_idUsuario INT)
 BEGIN
+-- Declaramos las siguientes variables necesarias para la transaccion
 DECLARE saldoUsuario DECIMAL(10, 2);
 DECLARE precio DECIMAL(10, 2);
 DECLARE estadoActual VARCHAR(30);
 DECLARE boletoDueño int;
+-- Obtenemos el saldo del usuario que quiere adquirir los boletos
 SELECT saldo INTO saldoUsuario
 FROM Usuarios
 WHERE idUsuario=p_idUsuario;
 START TRANSACTION;
+-- Consultamos los datos del boleto que el usuario quiere comprar y les asignamos variables locales
 SELECT	
 		precioOriginal,
         estado,
@@ -140,33 +153,37 @@ SELECT
         FROM Boletos
         WHERE 
         idBoleto=p_IdBoleto;
-    -- Verificar si el boleto está disponible
+    -- Verificamos si el boleto ya ha sido vendido y si es así, cancelamos la transacción y mostramos un mensaje.
     IF estadoActual = "Vendido" THEN
         ROLLBACK;
         SELECT 'No hay boletos disponibles para este evento y fecha.' AS Mensaje;
     ELSE
-        -- Verificar si el usuario tiene suficiente saldo y que el sistema es quien lo vende
+        -- Verificamos si el usuario tiene suficiente saldo y que el sistema es quien lo vende
         IF saldoUsuario < precio and boletoDueño IS null THEN
-            -- Si no tiene suficiente saldo, apartar el boleto
+            -- Si no tiene suficiente saldo, el boleto se mostrara como apartado
             UPDATE Boletos 
             SET Estado = "Apartado"
             WHERE idBoleto = p_idBoleto;
-
+			
+            -- Guardamos la transaccion donde el boleto fue apartado
             INSERT INTO TRANSACCIONES (fechaHora, monto, tipo, estado, idBoleto, IdComprador) 
             VALUES (NOW(), precio, "Compra", "Procesando", p_idBoleto, p_idUsuario);
-
+			
+            -- Enviamos mensaje diciendo que el boleto ha sido apartado
             COMMIT;
             SELECT 'Boleto apartado. Saldo insuficiente para completar la compra.' AS Mensaje;
         ELSE
-            -- Si tiene suficiente saldo, comprar el boleto
+            -- Si tiene el usuario tiene suficiente saldo, le restamos el precio del boleto a su cuenta y actualizamos su saldo
             UPDATE Usuarios
             SET Saldo = saldoUsuario - precio
             WHERE idUsuario = p_idUsuario;
-
+			
+            -- Cambiamos el estado del boleto a vendido y le asignamos el id del usuario que lo compro
             UPDATE Boletos
             SET estado = 'Vendido', idUsuario = p_idUsuario
             WHERE idBoleto = p_idBoleto;
-
+			
+            -- Guardamos la transaccion de la compra y mandamos un menaje diciendo que la compra fue exitosa
             INSERT INTO TRANSACCIONES (fechaHora, monto, tipo, estado, idBoleto, IdComprador) 
             VALUES (NOW(), precio, "Compra", "Completada", p_idBoleto, p_idUsuario);
 
@@ -178,14 +195,14 @@ END;
 $$
 
 DELIMITER ;
-
--- Actualizar estado de "Apartado" a "Disponible"
+-- EVENTO PARA ACTUALIZAR ESTADO DE "APARTADO" A "DISPONIBLE" LUEGO DE 10 MINUTOS
 SET GLOBAL event_scheduler = ON;
 DELIMITER $$
 CREATE EVENT IF NOT EXISTS actualizar_boletos_apartados
 ON SCHEDULE EVERY 1 MINUTE
 DO
 BEGIN
+	-- Cada 1 minuto se revisara la diferencia de tiempo de la fecha y hora de la tranaccion, y cuando esta diferencia sea mayor o igual a 10 minutos del tiempo actual se cambiara el estado del boleto de "Apartado" a "Disponible"  
     UPDATE Boletos
     SET estado = 'Disponible'
     WHERE estado = 'Apartado' AND TIMESTAMPDIFF(MINUTE, (SELECT MAX(fechaHora) FROM TRANSACCIONES WHERE TRANSACCIONES.idBoleto = Boletos.idBoleto), NOW()) >= 10;
@@ -193,55 +210,55 @@ END $$
 DELIMITER ;
 DELIMITER $$
 
--- COMPRA A OTRO USUARIO
-
-
+-- PROCEDIMIENTO ALMACENADO PARA COMPRAR UN BOLETO QUE OTRO USUARIO VENDE
 CREATE PROCEDURE comprar_reventa(
-    IN p_idBoleto INT,  -- ID del boleto que se quiere comprar
-    IN p_idUsuario INT  -- ID del usuario comprador
+    IN p_idBoleto INT,  
+    IN p_idUsuario INT 
 )
 BEGIN
+	-- Declaramos variables que son necesarias para el procedimiento
     DECLARE saldoUsuario DECIMAL(10,2);
     DECLARE precioBoleto DECIMAL(10,2);
     DECLARE estadoBoleto VARCHAR(30);
     DECLARE idUsuarioVendedor INT;
     
-    -- Obtener el precio del boleto, estado y idUsuario (vendedor)
+    -- Obtenemos los valores de interes para la compra y las asginamos a variables locales
     SELECT precioOriginal, estado, idUsuario
     INTO precioBoleto, estadoBoleto, idUsuarioVendedor
     FROM Boletos
     WHERE idBoleto = p_idBoleto;
 
-    -- Verificar si el boleto existe
+    -- Verificamos si el boleto existe, si no existe lanzamos un mensaje personalizado usando un codigo de error generico 
     IF precioBoleto IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Boleto no encontrado.';
     END IF;
 
-    -- Si el boleto ya ha sido vendido, no se puede comprar
+    -- Verificamos si el boleto esta disponible, si no esta disponible lanzamos un mensaje personalizado usando un codigo de error generico
     IF estadoBoleto = 'Vendido' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Este boleto ya ha sido vendido.';
     END IF;
 
-    -- Obtener el saldo del usuario comprador
+    -- Obtenemos el saldo del usuario comprador
     SELECT saldo INTO saldoUsuario
     FROM Usuarios
     WHERE idUsuario = p_idUsuario;
 
-    -- Verificar si el comprador tiene saldo suficiente
+    -- Verificamos si el comprador tiene saldo suficiente
     IF saldoUsuario < precioBoleto THEN
-        -- Si no tiene saldo suficiente, apartar el boleto durante 10 minutos y generar la transacción de reventa
+        -- En caso de que el usuario no tiene saldo suficiente, se aparta el boleto durante 10 minutos y se genera la transacción de reventa
         UPDATE Boletos
         SET estado = 'Apartado'
         WHERE idBoleto = p_idBoleto;
 
-        -- Registrar la transacción de "Apartado" cuando el boleto es apartado
+        -- Registramos la transacción de "Apartado" cuando el boleto es apartado
         INSERT INTO Transacciones (fechaHora, monto, tipo, estado, idBoleto, idComprador, idVendedor)
         VALUES (NOW(), precioBoleto, 'Reventa', 'Procesando', p_idBoleto, p_idUsuario, idUsuarioVendedor);
-
+		
+        -- Mostramos mensaje personalizado diciendo que el saldo es insuficiente y el boleto fue apartado
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Saldo insuficiente. El boleto ha sido apartado por 10 minutos.';
     END IF;
 
-    -- Iniciar la transacción
+    -- En caso de que el usuario tenga saldo suficiente inicia la transaccion
     START TRANSACTION;
 
     -- Restar el saldo del comprador
@@ -254,32 +271,23 @@ BEGIN
     SET idUsuario = p_idUsuario, estado = 'Vendido'
     WHERE idBoleto = p_idBoleto;
 
-    -- Acreditar el saldo del vendedor
+    -- Acreditamos el monto del boleto menos el 3% de comision al vendedor
     UPDATE Usuarios
-    SET saldo = saldo + precioBoleto
+    SET saldo = saldo + (precioBoleto * 0.97)
     WHERE idUsuario = idUsuarioVendedor;
 
-    -- Registrar la transacción de compra
+    -- Registramos la transacción de compra
     INSERT INTO Transacciones (fechaHora, monto, tipo, estado, idBoleto, idComprador, idVendedor)
     VALUES (NOW(), precioBoleto, 'Compra', 'Completada', p_idBoleto, p_idUsuario, idUsuarioVendedor);
 
-    -- Confirmar la transacción
     COMMIT;
 
-    -- Mensaje de éxito
     SELECT 'Compra realizada con éxito.' AS Mensaje;
 END $$
-
 DELIMITER ;
 
-
-
-
-
-
-
+-- PROCEDIMIENTO ALMACENADO PARA REGISTRAR USUARIO
 DELIMITER $$
-
 CREATE PROCEDURE registrar_usuario(
     IN p_email VARCHAR(255),
     IN p_nombre VARCHAR(20),
@@ -303,10 +311,8 @@ $$
 
 DELIMITER ;
 
--- OBTENER LOS BOLETOS DE UN USUARIO
-
+-- PROCEDIMIENTO ALMACENADO PARA OBTENER LOS BOLETOS DE UN USUARIO 
 DELIMITER //
-
 CREATE PROCEDURE obtenerBoletos(IN id INT)
 BEGIN
     SELECT 
@@ -323,12 +329,10 @@ BEGIN
     INNER JOIN eventos AS E ON B.idEvento = E.idEvento
     WHERE idUsuario = id AND B.estado = "Vendido";
 END //
-
 DELIMITER ;
 
-
+-- PROCEDIMIENTO ALMACENADO PARA BUSCAR UN BOLETO POR SU ID
 DELIMITER //
-
 CREATE PROCEDURE obtenerBoletoPorId(IN p_idBoleto INT)
 BEGIN
     SELECT 
@@ -345,77 +349,72 @@ BEGIN
     INNER JOIN Eventos AS E on E.idEvento = B.idEvento
     WHERE B.idBoleto = p_idBoleto;
 END //
-
 DELIMITER ;
 
--- TRANSACCION PONER BOLETOS EN VENTA
+-- TRANSACCION PARA PONER BOLETOS EN VENTA
 DELIMITER $$
-
 CREATE PROCEDURE poner_en_venta(
     IN p_idBoleto INT,
     IN p_precioNuevo DECIMAL(10,2),
     IN p_fechaLimite DATE
 )
 BEGIN
+	-- Declaramos las variables necesarias
     DECLARE v_precioOriginal DECIMAL(10,2);
     DECLARE v_estadoActual VARCHAR(20);
 
-    -- Iniciar una transacción
     START TRANSACTION;
 
-    -- Obtener el precio original y el estado actual del boleto
+    -- Obtenemos el precio original y el estado actual del boleto
     SELECT precioOriginal, estado 
     INTO v_precioOriginal, v_estadoActual
     FROM Boletos 
     WHERE idBoleto = p_idBoleto;
 
-    -- Si el boleto no existe, lanzar error
+    -- Si el boleto no existe, lanzamos error con el codigo personalizado de errores de SQL 45000
     IF v_precioOriginal IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Error: El boleto no existe';
         ROLLBACK;
     END IF;
 
-    -- Validar que el boleto esté en estado "Vendido"
+    -- Validamos que el boleto este marcado como "Vendido", de lo contrario no se podra revender
     IF v_estadoActual <> 'Vendido' THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Error: Solo puedes revender boletos en estado "Vendido"';
         ROLLBACK;
     END IF;
 
-    -- Validar que el precio nuevo no sea mayor al 3% del precio original
+    -- Validamos que el precio nuevo no sea mayor al 3% del precio original
     IF p_precioNuevo > (v_precioOriginal * 1.03) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Error: El precio de reventa no puede ser mayor al 3% del precio original';
         ROLLBACK;
     END IF;
 
-    -- Actualizar el estado del boleto y su nuevo precio
+    -- Actualizamos el estado del boleto y su nuevo precio
     UPDATE Boletos
     SET estado = 'Disponible', precioOriginal = p_precioNuevo
     WHERE idBoleto = p_idBoleto;
 
-    -- Confirmar los cambios
     COMMIT;
 END $$
-
 DELIMITER ;
 
+-- PROCEDIMIENTO PARA QUITAR LOS BOLETOS QUE NO SE VENDIERON DESPUES DE LA FECHA LIMITE  
 DELIMITER $$
-
 CREATE PROCEDURE actualizar_boletos_vencidos()
 BEGIN
     UPDATE Boletos
     SET estado = 'Vendido'
     WHERE estado = 'Disponible' AND fechaLimiteReventa < CURDATE();
 END $$
-
 DELIMITER ;
 
 
 
 
--- REGISTROS PRE-CARGADOS (FALTA CAMBIAR CONTRASEÑAS A QUE SOLO SEAN HASHES)
+-- REGISTROS PRE-CARGADOS 
 -- Insertar direcciones de usuarios
 INSERT INTO DireccionesUsuarios (calle, ciudad, estado) VALUES
 ('Av. Reforma 123', 'Ciudad de México', 'CDMX'),
