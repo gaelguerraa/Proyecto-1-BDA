@@ -39,6 +39,7 @@ boletos\presentacion\VentaBoletos$3.class
 boletos\presentacion\MenuPrincipal$4.class
 boletos\presentacion\ReciboBoleto$1.class
 boletos\presentacion\Historial.class
+boletos\presentacion\MisBoletos$3.class
 boletos\presentacion\MisBoletos.class
 boletos\presentacion\ReciboBoleto.class
 boletos\dtos\UsuarioDTO.class
@@ -46,6 +47,7 @@ boletos\entidades\Boleto.class
 boletos\dtos\BoletoDTO.class
 boletos\presentacion\ComprarBoletosBusqueda$1.class
 boletos\control\ControlAgregarSaldo.class
+boletos\control\ControlVenderBoletos.class
 itson\boletos_proyecto1\main.class
 boletos\presentacion\ComprarBoletosDisponibilidad$3.class
 boletos\presentacion\VentaBoletos.class
