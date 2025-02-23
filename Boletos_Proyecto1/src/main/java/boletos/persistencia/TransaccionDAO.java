@@ -54,7 +54,6 @@ public class TransaccionDAO {
 //DEBE MOSTRAR LAS TRANSACCIONES DE LAS COMPRAS DEL USUARIO 
     public List<Transaccion> consultarCompras(){
         String codigoSQL = """
-<<<<<<< HEAD
                            SELECT 
                                T.IDTRANSACCION, 
                                E.NOMBRE AS Evento, 
@@ -69,13 +68,6 @@ public class TransaccionDAO {
                            JOIN BOLETOS B ON T.IDBOLETO = B.IDBOLETO  
                            JOIN EVENTOS E ON B.IDEVENTO = E.IDEVENTO  
                            WHERE T.IDCOMPRADOR = ?; 
-=======
-                           SELECT T.IDTRANSACCION, E.NOMBRE, E.FECHA, B.ASIENTO, B.FILA, B.NUMEROSERIE, T.ESTADO, T.MONTO  
-                           FROM TRANSACCIONES T  
-                           JOIN BOLETOS B ON T.IDBOLETO = B.IDBOLETO  
-                           JOIN EVENTOS E ON B.IDEVENTO = E.IDEVENTO  
-                           WHERE T.TIPO = 'COMPRA';
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
                            """;
         
         List<Transaccion> listaCompras = new LinkedList<>();
@@ -88,7 +80,6 @@ public class TransaccionDAO {
                 Integer idTransaccion = resultadosConsulta.getInt("idTransaccion");
                 String nombre = resultadosConsulta.getString("nombre");
                 Timestamp fecha = resultadosConsulta.getTimestamp("fecha");
-<<<<<<< HEAD
                 String asiento = resultadosConsulta.getString("asiento");
                 String fila = resultadosConsulta.getString("fila");
                 String numeroSerie = resultadosConsulta.getString("numeroSerie");
@@ -100,10 +91,6 @@ public class TransaccionDAO {
                  
                  listaCompras.add(transaccion);
                  
-=======
-		 //ME CONFUNDI AQUI PORQUE SE MEZCLARON ATRIBUTOS DE VARIAS ENTIDADES
-                
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
             }
         } catch (SQLException ex) {
             System.err.println("Error al consultar los boletos: " + ex.getMessage());
@@ -111,7 +98,6 @@ public class TransaccionDAO {
         
         return listaCompras;
     }
-<<<<<<< HEAD
     
     //DEBE MOSTRAR LAS TRANSACCIONES DE LAS VENTAS DEL USUARIO 
     public List<Transaccion> consultarVentas(){
@@ -160,6 +146,4 @@ public class TransaccionDAO {
         
         return listaVentas;
     }
-=======
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
 }

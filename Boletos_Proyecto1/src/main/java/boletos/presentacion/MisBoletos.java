@@ -4,17 +4,57 @@
  */
 package boletos.presentacion;
 
+import boletos.control.ControlVenderBoletos;
+import boletos.entidades.Boleto;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author jorge
  */
 public class MisBoletos extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MisBoletos
-     */
-    public MisBoletos() {
+    private ControlVenderBoletos control;
+    private Integer idBoleto;
+    
+    public MisBoletos(ControlVenderBoletos control) {
+        this.control = control;
+        setLocationRelativeTo(null);
         initComponents();
+        this.llenarTablaBoletos();
+        tblBoletos.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = tblBoletos.getSelectedRow();
+                if (selectedRow != -1) {
+                    this.idBoleto = (int) tblBoletos.getValueAt(selectedRow, 0);
+                    // AQUI OBTIENE EL ID DEL BOLETO SELECCIONADO PARA DESPUES QUE SE EJECUTE LA COMPRA
+                    System.out.println(idBoleto);
+                }
+            }
+        });
+    }
+    
+    public void llenarTablaBoletos(){
+        List<Boleto> listaBoletos = this.control.mostrarMisBoletos();
+        
+        //sacamos el modelo de la tabla para poder manipular sus datos
+        DefaultTableModel modelo = (DefaultTableModel)this.tblBoletos.getModel();
+        modelo.setRowCount(0);
+        // por cada artista devuelto por la clase control, lo agregamos a la jtable
+        for (Boleto boleto : listaBoletos) {
+            Object[] filaTabla = {
+                boleto.getIdBoleto(),
+                boleto.getEvento(),
+                boleto.getRecinto(),
+                boleto.getFecha(),
+                boleto.getAsiento(),
+                boleto.getFila(),
+                boleto.getNumSerie(),
+                boleto.getPrecio()  
+            };
+            modelo.addRow(filaTabla);
+        }
     }
 
     /**
@@ -64,7 +104,7 @@ public class MisBoletos extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Evento", "Fecha", "Asiento", "Fila", "Serie", "Estado", "Precio Original"
+                "ID", "Evento", "Recinto", "Fecha", "Asiento", "Fila", "Serie", "Precio Original"
             }
         ) {
             Class[] types = new Class [] {
@@ -84,6 +124,16 @@ public class MisBoletos extends javax.swing.JFrame {
         });
         tblBoletos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tblBoletos);
+        if (tblBoletos.getColumnModel().getColumnCount() > 0) {
+            tblBoletos.getColumnModel().getColumn(0).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(1).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(2).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(3).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(4).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(5).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(6).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(7).setResizable(false);
+        }
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -106,6 +156,11 @@ public class MisBoletos extends javax.swing.JFrame {
 
         btnRegresar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRegresar.setText("REGRESAR");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -137,8 +192,14 @@ public class MisBoletos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        // TODO add your handling code here:
+        control.vender(idBoleto);
+        
     }//GEN-LAST:event_btnVenderActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        control.regresar();
+        this.dispose();
+    }//GEN-LAST:event_btnRegresarActionPerformed
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

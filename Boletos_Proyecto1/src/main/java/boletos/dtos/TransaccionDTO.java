@@ -7,7 +7,6 @@ import java.sql.Timestamp;
  * @author gael_
  */
 public class TransaccionDTO {
-<<<<<<< HEAD
 // Atributos actuales utilizados en consultarCompras y consultarVentas
     private Integer idTransaccion;
     private String evento;  // Evento relacionado
@@ -42,18 +41,6 @@ public class TransaccionDTO {
     // Constructor con los atributos viejos 
     public TransaccionDTO(Integer idTransaccion, Timestamp fechaHora, double monto, String tipo, String estado, 
                        Integer idBoleto, Integer idComprador, Integer idVendedor) {
-=======
-    private Integer idTransaccion;
-    private Timestamp fechaHora;
-    private double monto;
-    private String tipo;
-    private String estado;
-    private Integer idBoleto;
-    private Integer idComprador;
-    private Integer idVendedor;
-
-    public TransaccionDTO(Integer idTransaccion, Timestamp fechaHora, double monto, String tipo, String estado, Integer idBoleto, Integer idComprador, Integer idVendedor) {
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
         this.idTransaccion = idTransaccion;
         this.fechaHora = fechaHora;
         this.monto = monto;
@@ -64,15 +51,11 @@ public class TransaccionDTO {
         this.idVendedor = idVendedor;
     }
 
-<<<<<<< HEAD
     // Getters y Setters para los nuevos atributos
-=======
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
     public Integer getIdTransaccion() {
         return idTransaccion;
     }
 
-<<<<<<< HEAD
     public void setIdTransaccion(Integer idTransaccion) {
         this.idTransaccion = idTransaccion;
     }
@@ -133,21 +116,10 @@ public class TransaccionDTO {
         this.monto = monto;
     }
 
-=======
-    public Timestamp getFechaHora() {
-        return fechaHora;
-    }
-
-    public double getMonto() {
-        return monto;
-    }
-
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
     public String getTipo() {
         return tipo;
     }
 
-<<<<<<< HEAD
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
@@ -159,28 +131,20 @@ public class TransaccionDTO {
 
     public void setFechaHora(Timestamp fechaHora) {
         this.fechaHora = fechaHora;
-=======
-    public String getEstado() {
-        return estado;
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
     }
 
     public Integer getIdBoleto() {
         return idBoleto;
     }
 
-<<<<<<< HEAD
     public void setIdBoleto(Integer idBoleto) {
         this.idBoleto = idBoleto;
     }
 
-=======
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
     public Integer getIdComprador() {
         return idComprador;
     }
 
-<<<<<<< HEAD
     public void setIdComprador(Integer idComprador) {
         this.idComprador = idComprador;
     }
@@ -192,11 +156,6 @@ public class TransaccionDTO {
     public void setIdVendedor(Integer idVendedor) {
         this.idVendedor = idVendedor;
     }
-=======
-    public Integer getIdVendedor() {
-        return idVendedor;
-    }
->>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
     
     
 }
