@@ -195,115 +195,87 @@ DELIMITER $$
 
 -- COMPRA A OTRO USUARIO
 
+
 CREATE PROCEDURE comprar_reventa(
-    IN p_idBoleto INT, 
-    IN p_idUsuario INT
+    IN p_idBoleto INT,  -- ID del boleto que se quiere comprar
+    IN p_idUsuario INT  -- ID del usuario comprador
 )
 BEGIN
     DECLARE saldoUsuario DECIMAL(10,2);
-    DECLARE precioOriginal DECIMAL(10,2);
-    DECLARE precioReventa DECIMAL(10,2);
-    DECLARE estadoActual VARCHAR(30);
-    DECLARE boletoDueño INT;
-    DECLARE precioMaximo DECIMAL(10,2);
-    DECLARE totalBoletos INT;
-    DECLARE boletosEnReventa INT;
-    DECLARE maxBoletosEnReventa INT;
-
-    -- Obtener datos del boleto
-    SELECT precioOriginal, precioReventa, estado, idUsuario 
-    INTO precioOriginal, precioReventa, estadoActual, boletoDueño
+    DECLARE precioBoleto DECIMAL(10,2);
+    DECLARE estadoBoleto VARCHAR(30);
+    DECLARE idUsuarioVendedor INT;
+    
+    -- Obtener el precio del boleto, estado y idUsuario (vendedor)
+    SELECT precioOriginal, estado, idUsuario
+    INTO precioBoleto, estadoBoleto, idUsuarioVendedor
     FROM Boletos
     WHERE idBoleto = p_idBoleto;
 
-    -- Contar cuántos boletos tiene el usuario
-    SELECT COUNT(*) INTO totalBoletos 
-    FROM Boletos 
-    WHERE idUsuario = boletoDueño;
-
-    -- Calcular el máximo de boletos que puede revender
-    SET maxBoletosEnReventa = FLOOR(totalBoletos / 2);
-
-    -- Contar cuántos boletos ya están en reventa
-    SELECT COUNT(*) INTO boletosEnReventa 
-    FROM Boletos 
-    WHERE idUsuario = boletoDueño AND estado = 'Reventa';
-
-    -- Verificar si el boleto está en reventa
-    IF estadoActual != "Reventa" THEN
-        SELECT 'Este boleto no está disponible para reventa.' AS Mensaje;
-    ELSE
-        -- Verificar que el usuario no compre su propio boleto
-        IF boletoDueño = p_idUsuario THEN
-            SELECT 'No puedes comprar tu propio boleto en reventa.' AS Mensaje;
-        ELSE
-            -- Verificar si el usuario ha alcanzado el límite de reventa
-            IF boletosEnReventa >= maxBoletosEnReventa THEN
-                SELECT 'Has alcanzado el límite de boletos en reventa.' AS Mensaje;
-            ELSE
-                -- Obtener el saldo del usuario comprador
-                SELECT saldo INTO saldoUsuario
-                FROM Usuarios
-                WHERE idUsuario = p_idUsuario;
-
-                -- Calcular precio máximo permitido (3% extra)
-                SET precioMaximo = precioOriginal * 1.03;
-
-                -- Verificar que el precio de reventa no exceda el límite
-                IF precioReventa > precioMaximo THEN
-                    SELECT 'El precio de reventa supera el límite permitido.' AS Mensaje;
-                ELSE
-                    -- Verificar si el usuario tiene saldo suficiente
-                    IF saldoUsuario < precioReventa THEN
-                        SELECT 'Saldo insuficiente para completar la compra.' AS Mensaje;
-                    ELSE
-                        START TRANSACTION;
-
-                        -- Restar el saldo del comprador
-                        UPDATE Usuarios 
-                        SET Saldo = saldoUsuario - precioReventa 
-                        WHERE idUsuario = p_idUsuario;
-
-                        -- Agregar el saldo al vendedor original
-                        UPDATE Usuarios 
-                        SET Saldo = Saldo + precioReventa 
-                        WHERE idUsuario = boletoDueño;
-
-                        -- Transferir el boleto al comprador
-                        UPDATE Boletos 
-                        SET idUsuario = p_idUsuario, estado = "Vendido"
-                        WHERE idBoleto = p_idBoleto;
-
-                        -- Registrar la transacción de reventa
-                        INSERT INTO TRANSACCIONES (fechaHora, monto, tipo, estado, idBoleto, IdComprador) 
-                        VALUES (NOW(), precioReventa, "Reventa", "Completada", p_idBoleto, p_idUsuario);
-
-                        COMMIT;
-                        SELECT 'Compra de reventa realizada con éxito.' AS Mensaje;
-                    END IF;
-                END IF;
-            END IF;
-        END IF;
+    -- Verificar si el boleto existe
+    IF precioBoleto IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Boleto no encontrado.';
     END IF;
-END;
-$$
 
-DELIMITER ;
+    -- Si el boleto ya ha sido vendido, no se puede comprar
+    IF estadoBoleto = 'Vendido' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Este boleto ya ha sido vendido.';
+    END IF;
 
--- Cambiar numero de serie cuando cambia de dueño un boleto
+    -- Obtener el saldo del usuario comprador
+    SELECT saldo INTO saldoUsuario
+    FROM Usuarios
+    WHERE idUsuario = p_idUsuario;
 
-DELIMITER $$
+    -- Verificar si el comprador tiene saldo suficiente
+    IF saldoUsuario < precioBoleto THEN
+        -- Si no tiene saldo suficiente, apartar el boleto durante 10 minutos y generar la transacción de reventa
+        UPDATE Boletos
+        SET estado = 'Apartado'
+        WHERE idBoleto = p_idBoleto;
 
-CREATE TRIGGER actualizar_numero_interno
-BEFORE UPDATE ON BOLETOS
-FOR EACH ROW
-BEGIN
-IF NEW.idUsuario <> OLD.idUsuario THEN
-SET NEW.numeroSerie = LEFT(UUID(), 8);
-END IF;
+        -- Registrar la transacción de "Apartado" cuando el boleto es apartado
+        INSERT INTO Transacciones (fechaHora, monto, tipo, estado, idBoleto, idComprador, idVendedor)
+        VALUES (NOW(), precioBoleto, 'Reventa', 'Procesando', p_idBoleto, p_idUsuario, idUsuarioVendedor);
+
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Saldo insuficiente. El boleto ha sido apartado por 10 minutos.';
+    END IF;
+
+    -- Iniciar la transacción
+    START TRANSACTION;
+
+    -- Restar el saldo del comprador
+    UPDATE Usuarios 
+    SET saldo = saldoUsuario - precioBoleto
+    WHERE idUsuario = p_idUsuario;
+
+    -- Transferir el boleto al comprador y cambiar su estado a 'Vendido'
+    UPDATE Boletos
+    SET idUsuario = p_idUsuario, estado = 'Vendido'
+    WHERE idBoleto = p_idBoleto;
+
+    -- Acreditar el saldo del vendedor
+    UPDATE Usuarios
+    SET saldo = saldo + precioBoleto
+    WHERE idUsuario = idUsuarioVendedor;
+
+    -- Registrar la transacción de compra
+    INSERT INTO Transacciones (fechaHora, monto, tipo, estado, idBoleto, idComprador, idVendedor)
+    VALUES (NOW(), precioBoleto, 'Compra', 'Completada', p_idBoleto, p_idUsuario, idUsuarioVendedor);
+
+    -- Confirmar la transacción
+    COMMIT;
+
+    -- Mensaje de éxito
+    SELECT 'Compra realizada con éxito.' AS Mensaje;
 END $$
 
 DELIMITER ;
+
+
+
+
+
 
 
 DELIMITER $$
@@ -349,8 +321,94 @@ BEGIN
         B.precioOriginal 
     FROM Boletos AS B
     INNER JOIN eventos AS E ON B.idEvento = E.idEvento
-    WHERE idUsuario = id;
+    WHERE idUsuario = id AND B.estado = "Vendido";
 END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE obtenerBoletoPorId(IN p_idBoleto INT)
+BEGIN
+    SELECT 
+        B.idBoleto, 
+        E.nombre,
+        E.recinto,
+        B.estado,
+        E.fecha, 
+        B.asiento, 
+        B.fila, 
+        B.numeroSerie, 
+        B.precioOriginal
+    FROM Boletos AS B
+    INNER JOIN Eventos AS E on E.idEvento = B.idEvento
+    WHERE B.idBoleto = p_idBoleto;
+END //
+
+DELIMITER ;
+
+-- TRANSACCION PONER BOLETOS EN VENTA
+DELIMITER $$
+
+CREATE PROCEDURE poner_en_venta(
+    IN p_idBoleto INT,
+    IN p_precioNuevo DECIMAL(10,2),
+    IN p_fechaLimite DATE
+)
+BEGIN
+    DECLARE v_precioOriginal DECIMAL(10,2);
+    DECLARE v_estadoActual VARCHAR(20);
+
+    -- Iniciar una transacción
+    START TRANSACTION;
+
+    -- Obtener el precio original y el estado actual del boleto
+    SELECT precioOriginal, estado 
+    INTO v_precioOriginal, v_estadoActual
+    FROM Boletos 
+    WHERE idBoleto = p_idBoleto;
+
+    -- Si el boleto no existe, lanzar error
+    IF v_precioOriginal IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: El boleto no existe';
+        ROLLBACK;
+    END IF;
+
+    -- Validar que el boleto esté en estado "Vendido"
+    IF v_estadoActual <> 'Vendido' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: Solo puedes revender boletos en estado "Vendido"';
+        ROLLBACK;
+    END IF;
+
+    -- Validar que el precio nuevo no sea mayor al 3% del precio original
+    IF p_precioNuevo > (v_precioOriginal * 1.03) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: El precio de reventa no puede ser mayor al 3% del precio original';
+        ROLLBACK;
+    END IF;
+
+    -- Actualizar el estado del boleto y su nuevo precio
+    UPDATE Boletos
+    SET estado = 'Disponible', precioOriginal = p_precioNuevo
+    WHERE idBoleto = p_idBoleto;
+
+    -- Confirmar los cambios
+    COMMIT;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE actualizar_boletos_vencidos()
+BEGIN
+    UPDATE Boletos
+    SET estado = 'Vendido'
+    WHERE estado = 'Disponible' AND fechaLimiteReventa < CURDATE();
+END $$
 
 DELIMITER ;
 
@@ -414,3 +472,5 @@ INSERT INTO Boletos (numeroSerie, fila, asiento, precioOriginal, numeroInterno, 
 ('C0000008', 'C', '8', 800.00, 'BOL-028', 'Vendido', 3, 4),
 ('C0000009', 'C', '9', 800.00, 'BOL-029', 'Disponible', 3, NULL),
 ('C0000010', 'C', '10', 800.00, 'BOL-030', 'Vendido', 3, 5);
+
+

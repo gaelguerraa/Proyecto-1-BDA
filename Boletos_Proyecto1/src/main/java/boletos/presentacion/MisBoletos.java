@@ -124,6 +124,16 @@ public class MisBoletos extends javax.swing.JFrame {
         });
         tblBoletos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tblBoletos);
+        if (tblBoletos.getColumnModel().getColumnCount() > 0) {
+            tblBoletos.getColumnModel().getColumn(0).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(1).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(2).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(3).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(4).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(5).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(6).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(7).setResizable(false);
+        }
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -182,9 +192,7 @@ public class MisBoletos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        
-        
-        
+        control.vender(idBoleto);
         
     }//GEN-LAST:event_btnVenderActionPerformed
 

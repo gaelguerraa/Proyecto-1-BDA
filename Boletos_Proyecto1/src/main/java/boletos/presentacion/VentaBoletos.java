@@ -4,18 +4,50 @@
  */
 package boletos.presentacion;
 
+import boletos.control.ControlVenderBoletos;
+import boletos.entidades.Boleto;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author jorge
  */
 public class VentaBoletos extends javax.swing.JFrame {
-
+    private ControlVenderBoletos control;
+    private Integer idBoleto;
     /**
      * Creates new form VentaBoletos
      */
-    public VentaBoletos() {
+    public VentaBoletos(ControlVenderBoletos control, Integer id) {
+        this.control = control;
+        this.idBoleto = id;
         initComponents();
+        this.llenarTablaBoleto(control.mostrarBoletoVenta(idBoleto));
     }
+     
+    public void llenarTablaBoleto(Boleto boleto) {
+    // Obtener el modelo de la tabla
+    DefaultTableModel modelo = (DefaultTableModel) this.tblBoletos.getModel();
+    modelo.setRowCount(0); // Limpiar la tabla antes de agregar el nuevo boleto
+
+    if (boleto != null) {
+        Object[] filaTabla = {
+            boleto.getIdBoleto(),
+            boleto.getEvento(),
+            boleto.getRecinto(),
+            boleto.getFecha(),
+            boleto.getAsiento(),
+            boleto.getFila(),
+            boleto.getNumSerie(),
+            boleto.getPrecio()
+        };
+        modelo.addRow(filaTabla);
+    }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,6 +67,13 @@ public class VentaBoletos extends javax.swing.JFrame {
         txtPrecio = new javax.swing.JTextField();
         btnVender = new javax.swing.JToggleButton();
         btnRegresar = new javax.swing.JToggleButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        boxAnios = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
+        boxDias = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        boxMeses = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -59,14 +98,10 @@ public class VentaBoletos extends javax.swing.JFrame {
         tblBoletos.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tblBoletos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Evento", "Fecha", "Asiento", "Fila", "Serie", "Estado", "Precio Original"
+                "ID", "Evento", "Recinto", "Fecha", "Asiento", "Fila", "Serie", "Precio Original"
             }
         ) {
             Class[] types = new Class [] {
@@ -86,8 +121,19 @@ public class VentaBoletos extends javax.swing.JFrame {
         });
         tblBoletos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tblBoletos);
+        if (tblBoletos.getColumnModel().getColumnCount() > 0) {
+            tblBoletos.getColumnModel().getColumn(0).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(1).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(2).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(3).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(4).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(5).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(6).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(7).setResizable(false);
+        }
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("PRECIO VENTA");
 
         txtPrecio.addActionListener(new java.awt.event.ActionListener() {
@@ -106,36 +152,94 @@ public class VentaBoletos extends javax.swing.JFrame {
 
         btnRegresar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnRegresar.setText("REGRESAR");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("FECHA LIMITE");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setText("Año");
+
+        boxAnios.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "2026", "2027", "2028", "2029", "2030" }));
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel5.setText("Dia");
+
+        boxDias.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        boxDias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel6.setText("Mes");
+
+        boxMeses.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(267, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addComponent(jLabel2)))
-                .addGap(264, 264, 264))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(310, 310, 310)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(266, 266, 266)
+                                .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(310, 310, 310)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnVender, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnRegresar, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))))
+                        .addGap(0, 259, Short.MAX_VALUE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnVender, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnRegresar, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(boxAnios, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(boxDias, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(boxMeses, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(257, 257, 257))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(48, 48, 48)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(boxAnios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(boxDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(boxMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                 .addComponent(btnVender)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnRegresar)
@@ -166,16 +270,50 @@ public class VentaBoletos extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPrecioActionPerformed
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        // TODO add your handling code here:
+        Double precio = Double.parseDouble(txtPrecio.getText());
+        // Obtener valores seleccionados en los ComboBox
+        String año = boxAnios.getSelectedItem().toString();
+        String mes = boxMeses.getSelectedItem().toString();
+        String dia = boxDias.getSelectedItem().toString();
+
+        // Formatear la fecha en "yyyy-MM-dd"
+        String fechaNacimientoTexto = año + "-" + mes + "-" + dia;
+
+        // Convertir a LocalDate
+        LocalDate fechaNacimiento = null;
+        try {
+            fechaNacimiento = LocalDate.parse(fechaNacimientoTexto);
+            control.confirmarVenta(idBoleto,precio, fechaNacimiento);
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Fecha inválida. Verifica los valores.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Detener el registro si la fecha es inválida
+        }
+        
+        
+        
+        
     }//GEN-LAST:event_btnVenderActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        control.regresarMisBoletos();
+        this.dispose();
+        
+    }//GEN-LAST:event_btnRegresarActionPerformed
 
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> boxAnios;
+    private javax.swing.JComboBox<String> boxDias;
+    private javax.swing.JComboBox<String> boxMeses;
     private javax.swing.JToggleButton btnRegresar;
     private javax.swing.JToggleButton btnVender;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

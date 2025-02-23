@@ -16,11 +16,12 @@ import javax.swing.table.DefaultTableModel;
  * @author jorge
  */
 public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
+
     private final ControlComprarBoletos control;
     private Integer idBoleto;
     private String nombreEvento;
     //fecha
-    
+
     /**
      * Creates new form ComprarBoletosDisponibilidad
      */
@@ -43,12 +44,12 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
             }
         });
     }
-    
-    public void llenarTablaBoletos(){
+
+    public void llenarTablaBoletos() {
         List<Boleto> listaBoletos = this.control.consultarListaBoletosNombre(nombreEvento);
-        
+
         //sacamos el modelo de la tabla para poder manipular sus datos
-        DefaultTableModel modelo = (DefaultTableModel)this.tblBoletos.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) this.tblBoletos.getModel();
         modelo.setRowCount(0);
         // por cada artista devuelto por la clase control, lo agregamos a la jtable
         // agregar recinto
@@ -61,7 +62,7 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
                 boleto.getFila(),
                 boleto.getNumSerie(),
                 boleto.getEstado(),
-                boleto.getPrecio()  
+                boleto.getPrecio()
             };
             modelo.addRow(filaTabla);
         }
@@ -202,10 +203,9 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnComprar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprar1ActionPerformed
-        // TODO add your handling code here:
-        control.comprarBoletosSistema(this.idBoleto);
+        control.comprarBoleto(idBoleto);
 
-        
+
     }//GEN-LAST:event_btnComprar1ActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
@@ -213,7 +213,7 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_btnRegresarActionPerformed
 
-  
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnComprar1;
     private javax.swing.JButton btnRegresar;
