@@ -6,7 +6,6 @@ package boletos.presentacion;
 
 import boletos.control.ControlComprarBoletos;
 import boletos.control.ControlAgregarSaldo;
-import boletos.control.ControlVenderBoletos;
 import boletos.dtos.UsuarioDTO;
 import boletos.persistencia.BoletosDAO;
 import boletos.persistencia.ConexionBD;
@@ -185,11 +184,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnComprarActionPerformed
 
     private void btnMisBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMisBoletosActionPerformed
-        ConexionBD manejadorConexiones = new ConexionBD();
-        BoletosDAO boletosDAO = new BoletosDAO(manejadorConexiones);
-        ControlVenderBoletos control = new ControlVenderBoletos(this, boletosDAO,usuarioActual);
-        control.iniciarCasoUso();
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_btnMisBoletosActionPerformed
 
     private void btnActualizarDatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarDatosActionPerformed
