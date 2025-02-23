@@ -4,18 +4,58 @@
  */
 package boletos.presentacion;
 
+import boletos.entidades.Transaccion;
+import boletos.persistencia.TransaccionDAO;
+import boletos.persistencia.TransaccionDAO;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
+
 /**
  *
  * @author jorge
  */
 public class Historial extends javax.swing.JFrame {
 
+        
+    private TransaccionDAO transaccionDAO;
+    
+
+    
     /**
      * Creates new form Historial
      */
-    public Historial() {
+       public Historial(TransaccionDAO transaccionDAO) {
+        this.transaccionDAO = transaccionDAO;
         initComponents();
+        cargarHistorial();
     }
+       
+       private void cargarHistorial(){
+        List<Transaccion> compras = transaccionDAO.consultarCompras(); // Obtener lista de compras
+        List<Transaccion> ventas = transaccionDAO.consultarVentas();
+    
+
+        
+        DefaultTableModel modeloComprados = (DefaultTableModel)tblBoletosComprados.getModel();
+        DefaultTableModel modeloVendidos = (DefaultTableModel) tblBoletosVendidos.getModel();
+        
+        modeloComprados.setRowCount(0);
+        modeloVendidos.setRowCount(0);
+        
+        for(Transaccion t : compras){
+            modeloComprados.addRow(new Object[]{
+            t.getIdTransaccion(), t.getEvento(), t.getFecha(), t.getAsiento(), t.getFila(), t.getNumeroSerie(), t.getEstado(), t.getMonto()});
+        }
+
+
+         for(Transaccion t : ventas){
+            modeloComprados.addRow(new Object[]{
+            t.getIdTransaccion(), t.getEvento(), t.getFecha(), t.getAsiento(), t.getFila(), t.getNumeroSerie(), t.getEstado(), t.getMonto()});
+        }
+            
+        }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
