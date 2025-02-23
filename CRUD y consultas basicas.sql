@@ -42,6 +42,7 @@ DELIMITER $$
 CREATE PROCEDURE ActualizarUsuario(
 	#parametros
     IN _IDUSUARIO INT,
+    IN _IDDIRECCION INT,
 	IN _EMAIL VARCHAR(25),
 	IN _NOMBRE VARCHAR(20),
 	IN _APELLIDOPATERNO VARCHAR(20),
@@ -49,28 +50,34 @@ CREATE PROCEDURE ActualizarUsuario(
 	IN _FECHANACIMIENTO DATE,
 	IN _CALLE VARCHAR(30),
 	IN _CIUDAD VARCHAR(30),
-	IN _ESTADO VARCHAR(30))
+	IN _ESTADO VARCHAR(30),
+    IN _CONTRASENIA VARCHAR(200))
 
 BEGIN
-	#Se declara _IDDIRECCION
-	DECLARE _IDDIRECCION INT;
-    
-    #Consulta la direccion del usuario y la guarda en _IDDIRECCION con el into
-    SELECT idDireccion 
-    INTO _IDDIRECCION 
-    FROM usuarios
-    WHERE idUsuario = _IDDIRECCION;
     
     #Actualizar datos del usuario
-    UPDATE usuarios
-    SET
-		#Se actualizan los datos con los datos recibidos de parametro
-		email = _EMAIL,
-		nombre = _NOMBRE,
-		apellidoPaterno = _APELLIDOPATERNO,
-		apellidoMaterno = _APELLIDOMATERNO,
-		fechaNacimiento = _FECHANACIMIENTO
-    WHERE idUsuario = _IDUSUARIO;
+    #Si la contraseña es NULL o vacía, no se actualiza
+    IF _CONTRASENIA IS NULL OR _CONTRASENIA = '' THEN
+        UPDATE Usuarios
+        SET
+            email = _EMAIL,
+            nombre = _NOMBRE,
+            apellidoPaterno = _APELLIDOPATERNO,
+            apellidoMaterno = _APELLIDOMATERNO,
+            fechaNacimiento = _FECHANACIMIENTO
+        WHERE idUsuario = _IDUSUARIO;
+    ELSE
+    #De lo contrario se almacena la nueva contraseña como hash
+        UPDATE Usuarios
+        SET
+            email = _EMAIL,
+            nombre = _NOMBRE,
+            apellidoPaterno = _APELLIDOPATERNO,
+            apellidoMaterno = _APELLIDOMATERNO,
+            fechaNacimiento = _FECHANACIMIENTO,
+            contraseña_hash = SHA2(_CONTRASENIA, 256)  -- Se almacena como hash
+        WHERE idUsuario = _IDUSUARIO;
+    END IF;
     
     #Actualizar la direccion del usuario
     UPDATE direccionesusuarios 
