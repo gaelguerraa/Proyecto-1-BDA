@@ -51,6 +51,7 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
         DefaultTableModel modelo = (DefaultTableModel)this.tblBoletos.getModel();
         modelo.setRowCount(0);
         // por cada artista devuelto por la clase control, lo agregamos a la jtable
+        // agregar recinto
         for (Boleto boleto : listaBoletos) {
             Object[] filaTabla = {
                 boleto.getIdBoleto(),
@@ -121,7 +122,9 @@ public class ComprarBoletosDisponibilidad extends javax.swing.JFrame {
         tblBoletos.getTableHeader().setReorderingAllowed(false);
         panel.setViewportView(tblBoletos);
         if (tblBoletos.getColumnModel().getColumnCount() > 0) {
+            tblBoletos.getColumnModel().getColumn(0).setResizable(false);
             tblBoletos.getColumnModel().getColumn(1).setResizable(false);
+            tblBoletos.getColumnModel().getColumn(2).setResizable(false);
             tblBoletos.getColumnModel().getColumn(3).setResizable(false);
             tblBoletos.getColumnModel().getColumn(4).setResizable(false);
             tblBoletos.getColumnModel().getColumn(5).setResizable(false);
