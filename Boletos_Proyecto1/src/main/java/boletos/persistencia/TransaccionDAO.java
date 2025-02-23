@@ -54,11 +54,28 @@ public class TransaccionDAO {
 //DEBE MOSTRAR LAS TRANSACCIONES DE LAS COMPRAS DEL USUARIO 
     public List<Transaccion> consultarCompras(){
         String codigoSQL = """
+<<<<<<< HEAD
+                           SELECT 
+                               T.IDTRANSACCION, 
+                               E.NOMBRE AS Evento, 
+                               E.FECHA, 
+                               B.ASIENTO, 
+                               B.FILA, 
+                               B.NUMEROSERIE, 
+                               T.ESTADO, 
+                               T.MONTO, 
+                               T.TIPO  
+                           FROM TRANSACCIONES T  
+                           JOIN BOLETOS B ON T.IDBOLETO = B.IDBOLETO  
+                           JOIN EVENTOS E ON B.IDEVENTO = E.IDEVENTO  
+                           WHERE T.IDCOMPRADOR = ?; 
+=======
                            SELECT T.IDTRANSACCION, E.NOMBRE, E.FECHA, B.ASIENTO, B.FILA, B.NUMEROSERIE, T.ESTADO, T.MONTO  
                            FROM TRANSACCIONES T  
                            JOIN BOLETOS B ON T.IDBOLETO = B.IDBOLETO  
                            JOIN EVENTOS E ON B.IDEVENTO = E.IDEVENTO  
                            WHERE T.TIPO = 'COMPRA';
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
                            """;
         
         List<Transaccion> listaCompras = new LinkedList<>();
@@ -71,8 +88,22 @@ public class TransaccionDAO {
                 Integer idTransaccion = resultadosConsulta.getInt("idTransaccion");
                 String nombre = resultadosConsulta.getString("nombre");
                 Timestamp fecha = resultadosConsulta.getTimestamp("fecha");
+<<<<<<< HEAD
+                String asiento = resultadosConsulta.getString("asiento");
+                String fila = resultadosConsulta.getString("fila");
+                String numeroSerie = resultadosConsulta.getString("numeroSerie");
+                String estado = resultadosConsulta.getString("estado");
+                Double monto = resultadosConsulta.getDouble("monto");
+                String tipo = resultadosConsulta.getString("tipo");
+                
+                 Transaccion transaccion = new Transaccion(idTransaccion, nombre, fecha, asiento, fila, numeroSerie, estado, monto,tipo);
+                 
+                 listaCompras.add(transaccion);
+                 
+=======
 		 //ME CONFUNDI AQUI PORQUE SE MEZCLARON ATRIBUTOS DE VARIAS ENTIDADES
                 
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
             }
         } catch (SQLException ex) {
             System.err.println("Error al consultar los boletos: " + ex.getMessage());
@@ -80,4 +111,55 @@ public class TransaccionDAO {
         
         return listaCompras;
     }
+<<<<<<< HEAD
+    
+    //DEBE MOSTRAR LAS TRANSACCIONES DE LAS VENTAS DEL USUARIO 
+    public List<Transaccion> consultarVentas(){
+        String codigoSQL = """
+                           SELECT 
+                               T.IDTRANSACCION, 
+                               E.NOMBRE AS Evento, 
+                               E.FECHA, 
+                               B.ASIENTO, 
+                               B.FILA, 
+                               B.NUMEROSERIE, 
+                               T.ESTADO, 
+                               T.MONTO, 
+                               T.TIPO  
+                           FROM TRANSACCIONES T  
+                           JOIN BOLETOS B ON T.IDBOLETO = B.IDBOLETO  
+                           JOIN EVENTOS E ON B.IDEVENTO = E.IDEVENTO  
+                           WHERE T.IDVENDEDOR = ?; 
+                           """;
+        
+        List<Transaccion> listaVentas = new LinkedList<>();
+        try {
+            Connection conexion = this.manejadorConexiones.crearConexion();
+            PreparedStatement comando = conexion.prepareStatement(codigoSQL);
+            ResultSet resultadosConsulta = comando.executeQuery();
+            
+            while(resultadosConsulta.next()){
+                Integer idTransaccion = resultadosConsulta.getInt("idTransaccion");
+                String nombre = resultadosConsulta.getString("nombre");
+                Timestamp fecha = resultadosConsulta.getTimestamp("fecha");
+                String asiento = resultadosConsulta.getString("asiento");
+                String fila = resultadosConsulta.getString("fila");
+                String numeroSerie = resultadosConsulta.getString("numeroSerie");
+                String estado = resultadosConsulta.getString("estado");
+                Double monto = resultadosConsulta.getDouble("monto");
+                String tipo = resultadosConsulta.getString("tipo");
+                
+                 Transaccion transaccion = new Transaccion(idTransaccion, nombre, fecha, asiento, fila, numeroSerie, estado, monto,tipo);
+                 
+                 listaVentas.add(transaccion);
+                 
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al consultar los boletos: " + ex.getMessage());
+        }
+        
+        return listaVentas;
+    }
+=======
+>>>>>>> 5c1a0f8a8c2778d59e747db91965ee1e5547f0bd
 }
