@@ -6,7 +6,6 @@ package boletos.presentacion;
 
 import boletos.entidades.Transaccion;
 import boletos.persistencia.TransaccionDAO;
-import boletos.persistencia.TransaccionDAO;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
